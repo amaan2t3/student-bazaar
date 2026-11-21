@@ -17,6 +17,7 @@ import CustomRequestModeration from '../pages/admin/CustomRequestModeration';
 import AddProject from '../pages/seller/AddProject';
 import MyProjects from '../pages/seller/MyProjects';
 import ProjectModeration from '../pages/admin/ProjectModeration';
+import AdminProjectDetails from '../pages/admin/AdminProjectDetails';
 import MyDownloads from '../pages/buyer/MyDownloads';
 import NotFound from '../pages/public/NotFound';
 
@@ -61,6 +62,9 @@ export const AppRoutes = () => {
         {/* Phase 7 Ready-Made Project Marketplace Studio */}
         <Route path="/seller/add-project" element={<RequireRole roles={['seller']}><AddProject /></RequireRole>} />
         <Route path="/seller/my-projects" element={<RequireRole roles={['seller']}><MyProjects /></RequireRole>} />
+        <Route path="/admin/projects" element={<RequireRole roles={['admin']}><ProjectModeration /></RequireRole>} />
+        <Route path="/admin/projects/new" element={<RequireRole roles={['admin']}><AddProject /></RequireRole>} />
+        <Route path="/admin/projects/:id" element={<RequireRole roles={['admin']}><AdminProjectDetails /></RequireRole>} />
         <Route path="/admin/project-moderation" element={<RequireRole roles={['admin']}><ProjectModeration /></RequireRole>} />
 
         {/* Phase 8 Buyer Private Download Vault */}

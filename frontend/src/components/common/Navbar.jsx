@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import logo from '../../assets/logo1.jpeg';
+import logo from '../../assets/logo-icon.jpeg';
 import {
   Search,
   ShoppingCart,
@@ -91,8 +91,15 @@ export const Navbar = () => {
 
               alt="StudentBazaar"
               className="h-16 w-auto group-hover:scale-10 transition-transform"
+              
             />
+            <span className="text-lg font-bold text-slate-900 tracking-tight group-hover:text-black transition-colors">
+              Student
+              <span className="text-[#D6B779]">Bazaar</span>
+            </span>
+
           </Link>
+ 
 
 
           {/* Search bar (desktop) */}
@@ -102,7 +109,7 @@ export const Navbar = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search OOP, Web, AI, DBMS, C++, Python projects..."
+              placeholder="Search projects..."
               className="w-full pl-9 pr-4 py-2 text-sm  rounded-lg transition-all placeholder:text-slate-400 focus:outline-none"
               style={{ border: `1px solid ${BORDER}` }}
               onFocus={e => e.target.style.borderColor = GOLD}
@@ -117,7 +124,8 @@ export const Navbar = () => {
             {role === 'admin' ? (
               <>
                 <NavLink to="/admin/dashboard" className={navLinkClasses}>Control Panel</NavLink>
-                <NavLink to="/admin/project-moderation" className={navLinkClasses}>Project Approvals</NavLink>
+                <NavLink to="/admin/projects" className={navLinkClasses}>Ready-Made Projects</NavLink>
+                <NavLink to="/admin/projects/new" className={navLinkClasses}>Add Project</NavLink>
                 <NavLink to="/admin/custom-requests" className={navLinkClasses}>Buyer Requests</NavLink>
                 <NavLink to="/admin/seller-applications" className={navLinkClasses}>Seller Applications</NavLink>
               </>
@@ -244,7 +252,8 @@ export const Navbar = () => {
             {(role === 'admin'
               ? [
                 { to: '/admin/dashboard', label: 'Control Panel' },
-                { to: '/admin/project-moderation', label: 'Ready-Made Project Approvals' },
+                { to: '/admin/projects', label: 'Ready-Made Projects' },
+                { to: '/admin/projects/new', label: 'Add Ready-Made Project' },
                 { to: '/admin/custom-requests', label: 'Buyer Custom Requests' },
                 { to: '/admin/seller-applications', label: 'Seller Applications' }
               ]

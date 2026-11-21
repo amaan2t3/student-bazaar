@@ -1,4 +1,5 @@
 import { isSupabaseConfigured } from '../config/supabase.js';
+import { sendAdminDecisionEmail } from '../services/adminNotificationService.js';
 
 // In-memory application store for simulated local mode
 const DEMO_SELLER_APPLICATIONS = [
@@ -232,11 +233,23 @@ export const reviewApplication = async (req, res) => {
       if (appError) {
         return res.status(400).json({ success: false, message: appError.message });
       }
+      const application = Array.isArray(updatedApp) ? updatedApp[0] : updatedApp;
+      const notification = await sendAdminDecisionEmail(req.supabase, {
+        userId: application.user_id,
+        subject: `StudentBazaar seller application ${status}`,
+        text: [
+          `Your seller application was ${status}.`,
+          `Admin note: ${application.admin_feedback || 'No additional note was provided.'}`
+        ].join('\n')
+      });
 
       return res.status(200).json({
         success: true,
-        message: `Seller application has been ${status}.`,
-        data: updatedApp
+        message: notification.sent
+          ? `Seller application ${status}. A notification email was sent.`
+          : `Seller application ${status}, but the email was not sent: ${notification.message}`,
+        notification,
+        data: application
       });
     }
 

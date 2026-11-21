@@ -45,8 +45,8 @@ export const SellerApplicationsReview = () => {
     setActionError('');
     try {
       const feedback = status === 'rejected' ? 'Incomplete GitHub repository documentation or unverified student ID.' : 'Approved: Academic and code credentials verified.';
-      await sellerService.reviewApplication(id, status, feedback);
-      setActionSuccess(`Application #${id} has been marked as ${status.toUpperCase()}!`);
+      const result = await sellerService.reviewApplication(id, status, feedback);
+      setActionSuccess(result.message || `Application #${id} has been marked as ${status.toUpperCase()}!`);
       fetchApplications();
     } catch (err) {
       setActionError(typeof err === 'string' ? err : 'Failed to review application.');

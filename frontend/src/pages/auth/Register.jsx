@@ -160,14 +160,13 @@ export const Register = () => {
             <label className="block text-xs font-semibold text-slate-700 mb-1">
               Your University <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
+            <div className="relative ">
               <UniversitySelect
                 value={university}
                 onChange={setUniversity}
                 required
               />
-              <Building className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-            </div>
+             </div>
           </div>
 
           {/* Degree & Semester Grid */}

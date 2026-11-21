@@ -55,6 +55,15 @@ export const projectService = {
     }
   },
 
+  async getAdminProject(id) {
+    try {
+      const response = await api.get(`/projects/admin/${id}`);
+      return response.data;
+    } catch (err) {
+      throw err.response?.data?.message || 'Failed to load project details.';
+    }
+  },
+
   // Admin approves or rejects
   async moderateProject(id, status, moderation_feedback) {
     try {

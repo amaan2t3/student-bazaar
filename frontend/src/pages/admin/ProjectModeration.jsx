@@ -49,8 +49,8 @@ export const ProjectModeration = () => {
         ? 'Verified: Source code archive and documentation comply with university standards.' 
         : 'Incomplete package: Missing SQL seed script or setup guide.';
       
-      await projectService.moderateProject(id, status, feedback);
-      setActionSuccess(`Project #${id} has been ${status.toUpperCase()} and published!`);
+      const result = await projectService.moderateProject(id, status, feedback);
+      setActionSuccess(result.message || `Project #${id} has been ${status.toUpperCase()}.`);
       fetchModerationQueue();
     } catch (err) {
       setActionError(typeof err === 'string' ? err : 'Failed to moderate project.');
@@ -79,7 +79,9 @@ export const ProjectModeration = () => {
             Inspect source code completeness, database schemas, and IEEE SRS documentation before publishing to the live marketplace.
           </p>
         </div>
-
+        <Link to="/admin/projects/new">
+          <Button size="sm" variant="primary">Add Ready-Made Project</Button>
+        </Link>
       </div>
 
       {actionSuccess && (
@@ -206,9 +208,9 @@ export const ProjectModeration = () => {
 
               {/* Right Column: Actions */}
               <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-2 shrink-0">
-                <Link to={`/project/${proj.slug}`} target="_blank" className="w-full sm:w-auto">
+                <Link to={`/admin/projects/${proj.id}`} className="w-full sm:w-auto">
                   <Button size="sm" variant="outline" className="w-full text-xs" rightIcon={<ExternalLink className="w-3 h-3" />}>
-                    Inspect Full Package
+                    View Project Details
                   </Button>
                 </Link>
 

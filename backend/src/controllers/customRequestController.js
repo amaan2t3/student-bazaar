@@ -1,4 +1,5 @@
 import { isSupabaseConfigured } from '../config/supabase.js';
+import { sendAdminDecisionEmail } from '../services/adminNotificationService.js';
 
 // Seed in-memory custom requests for simulated local mode
 let DEMO_CUSTOM_REQUESTS = [
@@ -397,9 +398,23 @@ export const moderateCustomRequest = async (req, res) => {
         .single();
 
       if (error) return res.status(400).json({ success: false, message: error.message });
+      const decision = status === 'open_for_bidding' ? 'approved' : 'rejected';
+      const notification = await sendAdminDecisionEmail(req.supabase, {
+        userId: data.buyer_id,
+        subject: `StudentBazaar custom request ${decision}: ${data.title}`,
+        text: [
+          `Your custom project request "${data.title}" was ${decision}.`,
+          `Estimated request amount: PKR ${Number(data.budget_pkr).toLocaleString()}.`,
+          `Admin note: ${data.admin_feedback || 'No additional note was provided.'}`
+        ].join('\n')
+      });
+
       return res.status(200).json({
         success: true,
-        message: `Custom request status updated to ${status}.`,
+        message: notification.sent
+          ? `Custom request ${decision}. A notification email was sent.`
+          : `Custom request ${decision}, but the email was not sent: ${notification.message}`,
+        notification,
         data
       });
     }

@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../config/supabase.js';
+import { sendAdminDecisionEmail } from '../services/adminNotificationService.js';
 
 // Helper for clean slug generation
 const slugify = (text) => {
@@ -284,7 +285,7 @@ export const createProject = async (req, res) => {
           system_prerequisites: Array.isArray(system_prerequisites) ? system_prerequisites : [],
           installation_guide,
           package_includes: package_includes || [],
-          status: 'pending' // Listings must be approved by admin before public display
+          status: 'pending'
         }])
         .select()
         .single();
@@ -294,7 +295,7 @@ export const createProject = async (req, res) => {
       }
 
       // Store file metadata in project_files table
-      await req.supabase
+      const { error: fileError } = await req.supabase
         .from('project_files')
         .insert([{
           project_id: newProject.id,
@@ -304,10 +305,39 @@ export const createProject = async (req, res) => {
           included_database_dump: true
         }]);
 
+      if (fileError) {
+        console.error('[Create Project File Metadata Error]:', fileError);
+        return res.status(500).json({
+          success: false,
+          message: 'Project was created for review, but its package metadata could not be saved.'
+        });
+      }
+
+      let projectToReturn = newProject;
+      if (req.user.role === 'admin') {
+        const { data: publishedProject, error: publishError } = await req.supabase
+          .from('projects')
+          .update({ status: 'approved', updated_at: new Date().toISOString() })
+          .eq('id', newProject.id)
+          .select()
+          .single();
+
+        if (publishError) {
+          console.error('[Publish Admin Project Error]:', publishError);
+          return res.status(500).json({
+            success: false,
+            message: 'Project was created but could not be published. Review it in the admin queue.'
+          });
+        }
+        projectToReturn = publishedProject;
+      }
+
       return res.status(201).json({
         success: true,
-        message: 'Project listing submitted successfully! It will go live after admin approval.',
-        data: newProject
+        message: req.user.role === 'admin'
+          ? 'Ready-made project created and published.'
+          : 'Project listing submitted successfully! It will go live after admin approval.',
+        data: projectToReturn
       });
     }
 
@@ -411,8 +441,7 @@ export const getAdminModerationQueue = async (req, res) => {
           *,
           seller:seller_id (
             full_name,
-            university,
-            email
+            university
           )
         `)
         .order('created_at', { ascending: false });
@@ -428,6 +457,31 @@ export const getAdminModerationQueue = async (req, res) => {
   } catch (err) {
     console.error('[Admin Queue Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+};
+
+export const getAdminProjectById = async (req, res) => {
+  try {
+    const { data, error } = await req.supabase
+      .from('projects')
+      .select(`
+        *,
+        seller:seller_id (
+          full_name,
+          university,
+          avatar_url
+        )
+      `)
+      .eq('id', req.params.id)
+      .maybeSingle();
+
+    if (error) return res.status(400).json({ success: false, message: error.message });
+    if (!data) return res.status(404).json({ success: false, message: 'Project not found.' });
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('[Admin Project Details Error]:', error);
+    return res.status(500).json({ success: false, message: 'Server error loading project details.' });
   }
 };
 
@@ -461,9 +515,22 @@ export const moderateProject = async (req, res) => {
         .single();
 
       if (error) return res.status(400).json({ success: false, message: error.message });
+      const notification = await sendAdminDecisionEmail(req.supabase, {
+        userId: data.seller_id,
+        subject: `StudentBazaar project listing ${status}: ${data.title}`,
+        text: [
+          `Your ready-made project "${data.title}" was ${status}.`,
+          `Listed amount: PKR ${Number(data.price_pkr).toLocaleString()}.`,
+          `Admin note: ${data.moderation_feedback || 'No additional note was provided.'}`
+        ].join('\n')
+      });
+
       return res.status(200).json({
         success: true,
-        message: `Project listing has been ${status}.`,
+        message: notification.sent
+          ? `Project listing ${status}. A notification email was sent.`
+          : `Project listing ${status}, but the email was not sent: ${notification.message}`,
+        notification,
         data
       });
     }

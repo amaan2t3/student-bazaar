@@ -5,6 +5,7 @@ import {
   createProject, 
   getSellerProjects, 
   getAdminModerationQueue, 
+  getAdminProjectById,
   moderateProject 
 } from '../controllers/projectController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
@@ -21,6 +22,7 @@ router.get('/seller/my-projects', protect, restrictTo('seller', 'admin'), getSel
 
 // Admin Moderation Queue
 router.get('/admin/moderation', protect, restrictTo('admin'), getAdminModerationQueue);
+router.get('/admin/:id', protect, restrictTo('admin'), getAdminProjectById);
 router.put('/admin/:id/moderate', protect, restrictTo('admin'), moderateProject);
 
 export default router;

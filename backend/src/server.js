@@ -7,6 +7,7 @@ import sellerRoutes from './routes/sellerRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import customRequestRoutes from './routes/customRequestRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { isSupabaseConfigured } from './config/supabase.js';
 
 dotenv.config();
@@ -62,6 +63,7 @@ app.use('/api/v1/sellers', sellerRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/custom-requests', customRequestRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // 404 Route Handler
 app.use('*', (req, res) => {

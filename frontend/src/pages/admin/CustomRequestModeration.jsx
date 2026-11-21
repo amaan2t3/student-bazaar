@@ -41,14 +41,14 @@ export const CustomRequestModeration = () => {
     setError('');
     setSuccess('');
     try {
-      await customRequestService.moderate(
+      const result = await customRequestService.moderate(
         request.id,
         status,
         status === 'open_for_bidding'
           ? 'Approved by admin and opened for seller bidding.'
           : 'Rejected by admin.'
       );
-      setSuccess(`“${request.title}” ${status === 'open_for_bidding' ? 'approved for bidding' : 'rejected'}.`);
+      setSuccess(result.message || `“${request.title}” ${status === 'open_for_bidding' ? 'approved for bidding' : 'rejected'}.`);
       await fetchRequests();
     } catch (requestError) {
       setError(typeof requestError === 'string' ? requestError : 'Failed to update buyer request.');

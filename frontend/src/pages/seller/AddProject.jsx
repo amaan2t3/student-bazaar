@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   UploadCloud, 
   Sparkles, 
@@ -14,11 +14,13 @@ import {
   DollarSign
 } from 'lucide-react';
 import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, CATEGORIES } from '../../data/mockAcademicData';
+import { useAuth } from '../../context/AuthContext';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
 
 export const AddProject = () => {
-  const navigate = useNavigate();
+  const { role } = useAuth();
+  const isAdmin = role === 'admin';
 
   // Wizard Step State
   const [step, setStep] = useState(1);
@@ -138,10 +140,12 @@ export const AddProject = () => {
             <span>Seller Studio</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Upload Ready-Made Project Package
+            {isAdmin ? 'Add Ready-Made Project' : 'Upload Ready-Made Project Package'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Publish your completed semester project with source code, schemas, and IEEE SRS documentation.
+            {isAdmin
+              ? 'Add a project to the marketplace from the administration panel.'
+              : 'Publish your completed semester project with source code, schemas, and IEEE SRS documentation.'}
           </p>
         </div>
 
@@ -540,7 +544,7 @@ export const AddProject = () => {
               className="shadow-md"
               leftIcon={<UploadCloud className="w-5 h-5" />}
             >
-              Submit for Admin Review
+              {isAdmin ? 'Publish Ready-Made Project' : 'Submit for Admin Review'}
             </Button>
           )}
         </div>
@@ -555,22 +559,28 @@ export const AddProject = () => {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xl font-bold text-slate-900">Project Submitted for Review!</h3>
+              <h3 className="text-xl font-bold text-slate-900">
+                {isAdmin ? 'Project Published!' : 'Project Submitted for Review!'}
+              </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Your listing <strong>"{title}"</strong> has been queued for admin code inspection. Once verified, it will be published to the marketplace.
+                {isAdmin
+                  ? <>Your listing <strong>"{title}"</strong> has been published to the marketplace.</>
+                  : <>Your listing <strong>"{title}"</strong> has been queued for admin code inspection. Once verified, it will be published to the marketplace.</>}
               </p>
             </div>
             <div className="pt-2 flex flex-col gap-2">
-              <Link to="/seller/my-projects">
+              <Link to={isAdmin ? '/admin/projects' : '/seller/my-projects'}>
                 <Button variant="primary" className="w-full">
-                  Go to My Projects Studio
+                  {isAdmin ? 'Manage Ready-Made Projects' : 'Go to My Projects Studio'}
                 </Button>
               </Link>
-              <Link to="/admin/project-moderation">
-                <Button variant="ghost" className="w-full text-xs text-amber-700">
-                  (Admin Evaluation Shortcut: Moderate in Admin Panel &rarr;)
-                </Button>
-              </Link>
+              {!isAdmin && (
+                <Link to="/admin/projects">
+                  <Button variant="ghost" className="w-full text-xs text-amber-700">
+                    (Admin Evaluation Shortcut: Moderate in Admin Panel &rarr;)
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

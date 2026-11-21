@@ -80,9 +80,7 @@ export const Footer = () => {
             &copy; {new Date().getFullYear()} StudentBazaar. Built for BSIT / BSCS Students across Pakistan.
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <span>Powered by MERN Stack</span>
-            <span>&bull;</span>
-            <span>Tailwind CSS</span>
+            <span>Powered by studentBazaar</span> 
             <span>&bull;</span>
             <span>Private Storage Vault</span>
           </div>

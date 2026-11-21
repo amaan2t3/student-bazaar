@@ -103,7 +103,7 @@ WHERE role <> 'buyer';
 CREATE POLICY "Public can view seller profiles"
 ON public.profiles FOR SELECT
 TO anon
-USING (role = 'seller');
+USING (role IN ('seller', 'admin'));
 
 CREATE POLICY "Users can view their own profile"
 ON public.profiles FOR SELECT
@@ -602,3 +602,53 @@ USING (
 CREATE INDEX IF NOT EXISTS idx_custom_req_buyer ON public.custom_requests(buyer_id);
 CREATE INDEX IF NOT EXISTS idx_custom_req_status ON public.custom_requests(status);
 CREATE INDEX IF NOT EXISTS idx_custom_req_curriculum ON public.custom_requests(degree, semester, subject);
+
+CREATE OR REPLACE FUNCTION public.admin_notification_recipient(user_id_param UUID)
+RETURNS TABLE(email TEXT, full_name TEXT)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    RAISE EXCEPTION 'Only administrators may retrieve notification recipients.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  RETURN QUERY
+  SELECT p.email, p.full_name
+  FROM public.profiles AS p
+  WHERE p.id = user_id_param;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_notification_recipient(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.admin_notification_recipient(UUID) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.admin_dashboard_totals()
+RETURNS TABLE(total_paid_revenue NUMERIC, total_request_budget NUMERIC)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    RAISE EXCEPTION 'Only administrators may retrieve dashboard totals.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    COALESCE((SELECT SUM(o.total_amount_pkr) FROM public.orders AS o WHERE o.payment_status = 'paid'), 0)::NUMERIC,
+    COALESCE((SELECT SUM(r.budget_pkr) FROM public.custom_requests AS r), 0)::NUMERIC;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_dashboard_totals() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.admin_dashboard_totals() TO authenticated;
+
+-- Table privileges are required in addition to RLS policies. RLS continues
+-- to limit each authenticated user to rows permitted by the policies above.
+GRANT SELECT ON public.orders TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.custom_requests TO authenticated;
+GRANT SELECT, INSERT ON public.seller_applications TO authenticated;
