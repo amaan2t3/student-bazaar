@@ -32,7 +32,7 @@ const AVAILABLE_SPECIALIZATIONS = [
 ];
 
 export const BecomeSeller = () => {
-  const { user, role, switchRole } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate();
 
   const [githubUrl, setGithubUrl] = useState('');

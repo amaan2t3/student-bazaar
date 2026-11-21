@@ -13,10 +13,33 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedClientOrigins = new Set(
+  (process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+
+const isAllowedClientOrigin = (origin) => {
+  if (allowedClientOrigins.has(origin)) return true;
+  if (process.env.NODE_ENV === 'production') return false;
+
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname);
+  } catch {
+    return false;
+  }
+};
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin || isAllowedClientOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -27,7 +50,8 @@ app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     service: 'studentBazaar API',
-    database: isSupabaseConfigured ? 'Supabase PostgreSQL (Live)' : 'Supabase PostgreSQL (Simulated Local Mode)',
+    database: isSupabaseConfigured ? 'Supabase PostgreSQL' : 'Not configured',
+    authentication: isSupabaseConfigured ? 'Supabase Auth' : 'Disabled',
     timestamp: new Date().toISOString()
   });
 });
@@ -58,5 +82,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 studentBazaar Express Backend running on http://localhost:${PORT}`);
-  console.log(`📡 Database: ${isSupabaseConfigured ? 'Connected to Supabase' : 'Local Simulated Supabase'}`);
+  console.log(`📡 Supabase: ${isSupabaseConfigured ? 'Configured' : 'Not configured; protected routes disabled'}`);
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Code2, 
   Lock, 
@@ -13,20 +13,22 @@ import {
   Building
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { DEGREES, UNIVERSITIES } from '../../data/mockAcademicData';
+import { DEGREES } from '../../data/mockAcademicData';
 import Button from '../../components/common/Button';
+import UniversitySelect from '../../components/common/UniversitySelect';
 
 export const Register = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [university, setUniversity] = useState('FAST National University (FAST-NUCES)');
+  const [university, setUniversity] = useState('');
   const [degree, setDegree] = useState('BSCS');
   const [semester, setSemester] = useState('3');
   const [localError, setLocalError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const { registerUser, loading, authError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +46,7 @@ export const Register = () => {
     }
 
     try {
-      await registerUser({
+      const registration = await registerUser({
         full_name: fullName.trim(),
         email: email.trim(),
         password,
@@ -52,12 +54,14 @@ export const Register = () => {
         degree,
         semester: Number(semester)
       });
-      setSuccessMessage('Student account created successfully! Redirecting...');
-      setTimeout(() => {
-        navigate('/browse');
-      }, 1500);
+      if (registration.requiresEmailConfirmation) {
+        setSuccessMessage('Account created. Check your email and confirm your address before signing in.');
+      } else {
+        setSuccessMessage('Student account created successfully. Redirecting...');
+        navigate(location.state?.from || '/browse', { replace: true });
+      }
     } catch (err) {
-      setLocalError(typeof err === 'string' ? err : 'Registration failed. Please try again.');
+      setLocalError(err.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -157,16 +161,11 @@ export const Register = () => {
               Your University <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <select
+              <UniversitySelect
                 value={university}
-                onChange={(e) => setUniversity(e.target.value)}
-                className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
+                onChange={setUniversity}
                 required
-              >
-                {UNIVERSITIES.map((uni, idx) => (
-                  <option key={idx} value={uni}>{uni}</option>
-                ))}
-              </select>
+              />
               <Building className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
             </div>
           </div>

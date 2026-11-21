@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Code2, Lock, Mail, ArrowRight, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Code2, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [localError, setLocalError] = useState('');
-  const { loginWithCredentials, loading, authError } = useAuth();
+  const [resetMessage, setResetMessage] = useState('');
+  const { loginWithCredentials, requestPasswordReset, updatePassword, recoveryMode, loading, authError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
+    setResetMessage('');
 
     if (!email.trim() || !password) {
       setLocalError('Please enter both your email address and password.');
@@ -21,18 +26,54 @@ export const Login = () => {
     }
 
     try {
-      await loginWithCredentials(email.trim(), password);
-      navigate('/browse');
+      const authenticatedUser = await loginWithCredentials(email.trim(), password);
+      navigate(
+        authenticatedUser.role === 'admin' ? '/admin/dashboard' : (location.state?.from || '/browse'),
+        { replace: true }
+      );
     } catch (err) {
-      setLocalError(typeof err === 'string' ? err : 'Invalid login credentials.');
+      setLocalError(err.message || 'Invalid login credentials.');
     }
   };
 
-  // Helper to instantly fill demo student credentials
-  const fillDemoAccount = (demoEmail) => {
-    setEmail(demoEmail);
-    setPassword('DemoPass123!');
+  const handlePasswordReset = async () => {
     setLocalError('');
+    setResetMessage('');
+    if (!email.trim()) {
+      setLocalError('Enter your email address first to receive a password reset link.');
+      return;
+    }
+
+    try {
+      await requestPasswordReset(email);
+      setResetMessage('If an account exists for this email, a password reset link has been sent.');
+    } catch (error) {
+      setLocalError(error.message || 'Unable to send a password reset email.');
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    setLocalError('');
+    if (newPassword.length < 8) {
+      setLocalError('Password must be at least 8 characters in length.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setLocalError('The passwords do not match.');
+      return;
+    }
+
+    try {
+      await updatePassword(newPassword);
+      setResetMessage('Your password has been updated. Sign in with your new password.');
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setLocalError(error.message || 'Unable to update your password.');
+    }
   };
 
   return (
@@ -52,37 +93,6 @@ export const Login = () => {
           </p>
         </div>
 
-        {/* Demo Persona Quick-Fill Banner (Ideal for University Project Evaluation) */}
-        <div className="p-3 bg-ivory rounded-xl border border-gold-soft text-xs space-y-2">
-          <div className="flex items-center gap-1.5 font-bold text-navy">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            <span>Evaluation Quick-Fill:</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('ali.raza@student.edu.pk')}
-              className="py-1 px-1.5 bg-white hover:bg-gold-soft/30 text-navy font-semibold rounded border border-gold-soft text-[10px] truncate"
-            >
-              Buyer (Ali)
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('usman.dev@student.edu.pk')}
-              className="py-1 px-1.5 bg-white hover:bg-gold-soft/30 text-navy font-semibold rounded border border-gold-soft text-[10px] truncate"
-            >
-              Seller (Usman)
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('admin@studentbazaar.pk')}
-              className="py-1 px-1.5 bg-white hover:bg-gold-soft/30 text-navy font-semibold rounded border border-gold-soft text-[10px] truncate"
-            >
-              Admin (Prof)
-            </button>
-          </div>
-        </div>
-
         {/* Error Alert */}
         {(localError || authError) && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
@@ -90,8 +100,45 @@ export const Login = () => {
             <span>{localError || authError}</span>
           </div>
         )}
+        {resetMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{resetMessage}</span>
+          </div>
+        )}
 
-        {/* Login Form */}
+        {recoveryMode ? (
+          <form onSubmit={handleUpdatePassword} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">New password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+                className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Confirm new password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+                className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
+              />
+            </div>
+            <Button type="submit" variant="primary" size="md" isLoading={loading} className="w-full shadow-md">
+              Update Password
+            </Button>
+          </form>
+        ) : (
+        /* Login Form */
         <form onSubmit={handleLoginSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -115,9 +162,9 @@ export const Login = () => {
               <label className="block text-xs font-semibold text-slate-700">
                 Password
               </label>
-              <a href="#forgot" onClick={(e) => { e.preventDefault(); alert('Password reset link will be sent to your email.'); }} className="text-[11px] text-gold hover:underline">
+              <button type="button" onClick={handlePasswordReset} className="text-[11px] text-gold hover:underline">
                 Forgot password?
-              </a>
+              </button>
             </div>
             <div className="relative">
               <input
@@ -143,6 +190,7 @@ export const Login = () => {
             Sign In to Account
           </Button>
         </form>
+        )}
 
         {/* Register Link */}
         <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">

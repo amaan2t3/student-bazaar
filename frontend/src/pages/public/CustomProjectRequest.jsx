@@ -1,32 +1,54 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Sparkles, 
   UploadCloud, 
-  Calendar, 
-  DollarSign, 
   ShieldCheck, 
-  FileText, 
   CheckCircle2, 
   AlertCircle,
-  HelpCircle,
-  GraduationCap
 } from 'lucide-react';
-import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE } from '../../data/mockAcademicData';
+import { useAuth } from '../../context/AuthContext';
+import customRequestService from '../../services/customRequestService';
+import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, getUniversityPricingTier } from '../../data/mockAcademicData';
 import Button from '../../components/common/Button';
+import UniversitySelect from '../../components/common/UniversitySelect';
+
+const PROJECT_LEVELS = [
+  { id: 'simple', name: 'Simple', basePrice: 2500, description: 'A focused project with core features.' },
+  { id: 'modern', name: 'Modern', basePrice: 4500, description: 'A polished project with current tools and expanded features.' },
+  { id: 'premium', name: 'Premium', basePrice: 7500, description: 'A comprehensive project with advanced features and support.' }
+];
+
+const DELIVERABLE_BUNDLES = [
+  { id: 'project_only', name: 'Project only', extraPrice: 0 },
+  { id: 'project_with_ppt', name: 'Project + PPT file', extraPrice: 1500 },
+  { id: 'project_ppt_meet', name: 'Project + PPT + Google Meet overview', extraPrice: 2500 }
+];
 
 export const CustomProjectRequest = () => {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
+  const [university, setUniversity] = useState(user?.university || '');
   const [degree, setDegree] = useState('BSCS');
   const [semester, setSemester] = useState('4');
   const [subject, setSubject] = useState('');
+  const [projectLevel, setProjectLevel] = useState('simple');
+  const [deliverableBundle, setDeliverableBundle] = useState('project_only');
   const [detailedScope, setDetailedScope] = useState('');
-  const [budgetPKR, setBudgetPKR] = useState('5000');
   const [deadline, setDeadline] = useState('2026-12-10');
   const [technologies, setTechnologies] = useState('React.js, Node.js, MongoDB');
   const [attachmentName, setAttachmentName] = useState(null);
   const [agreeIntegrity, setAgreeIntegrity] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const selectedLevel = PROJECT_LEVELS.find((level) => level.id === projectLevel);
+  const selectedBundle = DELIVERABLE_BUNDLES.find((bundle) => bundle.id === deliverableBundle);
+  const selectedUniversity = university.trim();
+  const universityTier = getUniversityPricingTier(selectedUniversity);
+  const priceIncrease = universityTier === 'high' ? 0.1 : 0.05;
+  const pricePKR = Math.round((selectedLevel.basePrice + selectedBundle.extraPrice) * (1 + priceIncrease));
 
   // Dynamically available subjects
   const availableSubjects = (degree && semester && SUBJECTS_BY_DEGREE[degree]?.[semester])
@@ -45,18 +67,43 @@ export const CustomProjectRequest = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !detailedScope.trim() || !subject) {
+    if (!title.trim() || !selectedUniversity || !detailedScope.trim() || !subject) {
       setError('Please fill in all required academic fields (Title, Subject, Scope).');
+      return;
+    }
+    if (!user) {
+      setError('Please sign in as a buyer to submit your custom project request.');
       return;
     }
     if (!agreeIntegrity) {
       setError('You must acknowledge the Academic Integrity & Learning policy.');
       return;
     }
+
     setError('');
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await customRequestService.create({
+        title: title.trim(),
+        university: selectedUniversity,
+        degree,
+        semester: Number(semester),
+        subject,
+        project_level: projectLevel,
+        deliverable_bundle: deliverableBundle,
+        detailed_scope: detailedScope.trim(),
+        deadline,
+        attachment_urls: attachmentName ? [attachmentName] : [],
+        technologies_needed: technologies.split(',').map((technology) => technology.trim()).filter(Boolean)
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(typeof err === 'string' ? err : 'Failed to submit your custom project request.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -100,8 +147,16 @@ export const CustomProjectRequest = () => {
               <span className="font-semibold text-slate-800">{subject}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Target Budget:</span>
-              <span className="font-bold text-navy-mid">Rs. {Number(budgetPKR).toLocaleString()} PKR</span>
+              <span className="text-slate-500">Estimated Price:</span>
+              <span className="font-bold text-navy-mid">Rs. {pricePKR.toLocaleString()} PKR</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">University:</span>
+              <span className="font-semibold text-slate-800">{selectedUniversity}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Package:</span>
+              <span className="font-semibold text-slate-800">{selectedBundle.name}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Deadline:</span>
@@ -157,7 +212,15 @@ export const CustomProjectRequest = () => {
               2. Academic Course Context <span className="text-red-500">*</span>
             </label>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-slate-600 mb-1">University</label>
+                <UniversitySelect
+                  value={university}
+                  onChange={setUniversity}
+                  required
+                />
+              </div>
               <div>
                 <label className="block text-xs text-slate-600 mb-1">Degree</label>
                 <select
@@ -211,6 +274,54 @@ export const CustomProjectRequest = () => {
             </div>
           </div>
 
+          {/* Project level and deliverables */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1.5">
+                Project Level
+              </label>
+              <select
+                value={projectLevel}
+                onChange={(e) => setProjectLevel(e.target.value)}
+                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold"
+              >
+                {PROJECT_LEVELS.map((level) => (
+                  <option key={level.id} value={level.id}>
+                    {level.name} — Rs. {level.basePrice.toLocaleString()}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-400 mt-1">{selectedLevel.description}</p>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1.5">
+                Deliverables
+              </label>
+              <select
+                value={deliverableBundle}
+                onChange={(e) => setDeliverableBundle(e.target.value)}
+                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold"
+              >
+                {DELIVERABLE_BUNDLES.map((bundle) => (
+                  <option key={bundle.id} value={bundle.id}>
+                    {bundle.name}{bundle.extraPrice ? ` (+ Rs. ${bundle.extraPrice.toLocaleString()})` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="rounded-xl border border-gold-soft bg-ivory/50 p-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold text-navy">
+                {universityTier === 'high' ? 'High-tier' : 'Low-tier'} price for {selectedUniversity || 'your university'}
+              </p>
+              <p className="text-[10px] text-slate-500">
+                {universityTier === 'high' ? '10%' : '5%'} university rate applied to the selected package.
+              </p>
+            </div>
+            <p className="text-lg font-extrabold text-navy">Rs. {pricePKR.toLocaleString()}</p>
+          </div>
+
           {/* Section 3: Scope & Assignment Rubric */}
           <div>
             <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1.5">
@@ -250,45 +361,24 @@ export const CustomProjectRequest = () => {
             </div>
           </div>
 
-          {/* Section 5: Budget & Deadline */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1">
-                5. Budget in PKR (Rs) <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  min="1000"
-                  step="500"
-                  value={budgetPKR}
-                  onChange={(e) => setBudgetPKR(e.target.value)}
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-800 focus:outline-none focus:border-gold font-bold"
-                  required
-                />
-                <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-semibold">Rs</span>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1">Minimum suggested budget is PKR 1,000.</p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1">
-                6. Submission Deadline <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-gold"
-                required
-              />
-            </div>
+          {/* Submission Deadline */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1">
+              5. Submission Deadline <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-gold"
+              required
+            />
           </div>
 
           {/* Section 6: Tech Preferences */}
           <div>
             <label className="block text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1">
-              7. Required Frameworks / Technologies
+              6. Required Frameworks / Technologies
             </label>
             <input
               type="text"
@@ -316,10 +406,16 @@ export const CustomProjectRequest = () => {
 
           {/* Submit Button */}
           <div className="pt-2">
+            {!user && (
+              <p className="text-xs text-center text-slate-600 mb-3">
+                You can browse requests without an account. To submit, <Link to="/login" className="font-semibold text-gold underline">sign in</Link> or <Link to="/register" className="font-semibold text-gold underline">create an account</Link>.
+              </p>
+            )}
             <Button
               type="submit"
               variant="primary"
               size="lg"
+              isLoading={submitting}
               className="w-full shadow-md"
               leftIcon={<Sparkles className="w-5 h-5" />}
             >

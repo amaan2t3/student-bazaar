@@ -13,13 +13,11 @@ import {
   FileText,
   DollarSign
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 
 export const ProjectModeration = () => {
-  const { role, switchRole } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
@@ -82,14 +80,6 @@ export const ProjectModeration = () => {
           </p>
         </div>
 
-        {role !== 'admin' && (
-          <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center gap-2 text-xs text-amber-800">
-            <span>Currently testing as <strong>{role}</strong>.</span>
-            <Button size="sm" variant="secondary" onClick={() => switchRole('admin')}>
-              Switch to Admin Persona
-            </Button>
-          </div>
-        )}
       </div>
 
       {actionSuccess && (
@@ -100,9 +90,16 @@ export const ProjectModeration = () => {
       )}
 
       {actionError && (
-        <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
+        <div role="alert" className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{actionError}</span>
+          <button
+            type="button"
+            onClick={fetchModerationQueue}
+            className="ml-auto font-semibold underline"
+          >
+            Retry
+          </button>
         </div>
       )}
 

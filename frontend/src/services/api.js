@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { supabase } from './supabase';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -9,12 +10,16 @@ export const api = axios.create({
   }
 });
 
-// Request Interceptor: Automatically inject Supabase JWT token if available
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('sb_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    if (config.headers.Authorization) return config;
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      throw error;
+    }
+    if (data.session?.access_token) {
+      config.headers.Authorization = `Bearer ${data.session.access_token}`;
     }
     return config;
   },

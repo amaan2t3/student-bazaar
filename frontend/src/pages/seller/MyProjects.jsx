@@ -12,13 +12,11 @@ import {
   DollarSign,
   AlertCircle
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 
 export const MyProjects = () => {
-  const { role, switchRole } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -63,12 +61,6 @@ export const MyProjects = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {role !== 'seller' && role !== 'admin' && (
-            <Button size="sm" variant="secondary" onClick={() => switchRole('seller')}>
-              Switch to Seller Persona
-            </Button>
-          )}
-
           <Link to="/seller/add-project">
             <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
               Add New Project

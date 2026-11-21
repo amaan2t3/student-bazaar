@@ -30,21 +30,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- 3. Enable Row Level Security (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- 4. RLS Policies
--- Anyone can view profiles (needed for viewing seller cards and author details)
-CREATE POLICY "Public profiles are viewable by everyone." 
-ON public.profiles FOR SELECT 
-USING (true);
-
--- Users can insert their own profile
-CREATE POLICY "Users can insert their own profile." 
-ON public.profiles FOR INSERT 
-WITH CHECK (auth.uid() = id);
-
--- Users can update only their own profile
-CREATE POLICY "Users can update their own profile." 
-ON public.profiles FOR UPDATE 
-USING (auth.uid() = id);
+-- Profile policies and column grants are applied after the signup trigger.
 
 -- 5. Trigger Function to automatically synchronize auth.users with public.profiles
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -64,7 +50,7 @@ BEGIN
     new.id,
     COALESCE(new.raw_user_meta_data->>'full_name', 'Student User'),
     new.email,
-    COALESCE((new.raw_user_meta_data->>'role')::user_role, 'buyer'),
+    'buyer',
     COALESCE(new.raw_user_meta_data->>'university', 'Pakistani University'),
     COALESCE(new.raw_user_meta_data->>'degree', 'BSCS'),
     COALESCE((new.raw_user_meta_data->>'semester')::integer, 1),
@@ -83,6 +69,76 @@ CREATE TRIGGER on_auth_user_created
 -- Indexing for fast role and university queries
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 CREATE INDEX IF NOT EXISTS idx_profiles_degree_semester ON public.profiles(degree, semester);
+
+-- Keep profile access private; only non-sensitive seller fields are public.
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
+DROP POLICY IF EXISTS "Users can update their own profile." ON public.profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Public can view seller profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile." ON public.profiles;
+
+CREATE OR REPLACE FUNCTION public.is_current_user_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+REVOKE ALL ON FUNCTION public.is_current_user_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_current_user_admin() TO authenticated;
+
+UPDATE public.profiles
+SET role = 'buyer', is_verified = false
+WHERE role <> 'buyer';
+
+CREATE POLICY "Public can view seller profiles"
+ON public.profiles FOR SELECT
+TO anon
+USING (role = 'seller');
+
+CREATE POLICY "Users can view their own profile"
+ON public.profiles FOR SELECT
+TO authenticated
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+ON public.profiles FOR UPDATE
+TO authenticated
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Authenticated users can view seller profiles"
+ON public.profiles FOR SELECT
+TO authenticated
+USING (role = 'seller');
+
+CREATE POLICY "Admins can view all profiles"
+ON public.profiles FOR SELECT
+TO authenticated
+USING (public.is_current_user_admin());
+
+REVOKE ALL ON public.profiles FROM anon, authenticated;
+REVOKE ALL ON public.profiles FROM PUBLIC;
+REVOKE SELECT (email, wallet_balance, escrow_balance, is_verified, created_at, updated_at)
+ON public.profiles FROM anon, authenticated, PUBLIC;
+REVOKE INSERT (id, full_name, email, role, university, degree, semester, avatar_url,
+               wallet_balance, escrow_balance, is_verified, created_at, updated_at)
+ON public.profiles FROM anon, authenticated, PUBLIC;
+REVOKE UPDATE (id, email, role, wallet_balance, escrow_balance, is_verified, created_at)
+ON public.profiles FROM anon, authenticated, PUBLIC;
+GRANT SELECT (id, full_name, role, university, degree, semester, avatar_url)
+ON public.profiles TO anon, authenticated;
+GRANT UPDATE (full_name, university, degree, semester, avatar_url, updated_at)
+ON public.profiles TO authenticated;
 
 
 -- ==============================================================================
@@ -135,6 +191,87 @@ USING (
 
 CREATE INDEX IF NOT EXISTS idx_seller_apps_user ON public.seller_applications(user_id);
 CREATE INDEX IF NOT EXISTS idx_seller_apps_status ON public.seller_applications(status);
+
+CREATE OR REPLACE FUNCTION public.prevent_seller_application_review_changes()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    IF TG_OP = 'INSERT' THEN
+      IF NEW.status <> 'pending' OR NEW.admin_feedback IS NOT NULL OR
+         NEW.reviewed_by IS NOT NULL OR NEW.reviewed_at IS NOT NULL THEN
+        RAISE EXCEPTION 'Seller applications must be submitted as pending.'
+          USING ERRCODE = '42501';
+      END IF;
+    ELSIF NEW.status IS DISTINCT FROM OLD.status OR
+          NEW.admin_feedback IS DISTINCT FROM OLD.admin_feedback OR
+          NEW.reviewed_by IS DISTINCT FROM OLD.reviewed_by OR
+          NEW.reviewed_at IS DISTINCT FROM OLD.reviewed_at THEN
+      RAISE EXCEPTION 'Only administrators may review seller applications.'
+        USING ERRCODE = '42501';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS prevent_seller_application_review_changes ON public.seller_applications;
+CREATE TRIGGER prevent_seller_application_review_changes
+  BEFORE INSERT OR UPDATE ON public.seller_applications
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_seller_application_review_changes();
+
+CREATE OR REPLACE FUNCTION public.review_seller_application(
+  application_id_param UUID,
+  status_param TEXT,
+  feedback_param TEXT
+)
+RETURNS public.seller_applications
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  reviewed_application public.seller_applications%ROWTYPE;
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    RAISE EXCEPTION 'Only administrators may review seller applications.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF status_param NOT IN ('approved', 'rejected') THEN
+    RAISE EXCEPTION 'Invalid seller application status.'
+      USING ERRCODE = '22023';
+  END IF;
+
+  UPDATE public.seller_applications
+  SET status = status_param::application_status,
+      admin_feedback = feedback_param,
+      reviewed_by = auth.uid(),
+      reviewed_at = now(),
+      updated_at = now()
+  WHERE id = application_id_param
+  RETURNING * INTO reviewed_application;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Seller application not found.'
+      USING ERRCODE = 'P0002';
+  END IF;
+
+  IF status_param = 'approved' THEN
+    UPDATE public.profiles
+    SET role = 'seller', is_verified = true
+    WHERE id = reviewed_application.user_id;
+  END IF;
+
+  RETURN reviewed_application;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.review_seller_application(UUID, TEXT, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.review_seller_application(UUID, TEXT, TEXT) TO authenticated;
 
 
 -- ==============================================================================
@@ -249,6 +386,34 @@ CREATE INDEX IF NOT EXISTS idx_projects_slug ON public.projects(slug);
 CREATE INDEX IF NOT EXISTS idx_projects_price ON public.projects(price_pkr);
 CREATE INDEX IF NOT EXISTS idx_projects_rating ON public.projects(average_rating DESC);
 
+CREATE OR REPLACE FUNCTION public.prevent_seller_project_moderation_changes()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    IF TG_OP = 'INSERT' THEN
+      IF NEW.status <> 'pending' OR NEW.moderation_feedback IS NOT NULL THEN
+        RAISE EXCEPTION 'New projects must be submitted for administrator review.'
+          USING ERRCODE = '42501';
+      END IF;
+    ELSIF NEW.status IS DISTINCT FROM OLD.status OR
+          NEW.moderation_feedback IS DISTINCT FROM OLD.moderation_feedback THEN
+      RAISE EXCEPTION 'Only administrators may change project moderation fields.'
+        USING ERRCODE = '42501';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS prevent_seller_project_moderation_changes ON public.projects;
+CREATE TRIGGER prevent_seller_project_moderation_changes
+  BEFORE INSERT OR UPDATE ON public.projects
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_seller_project_moderation_changes();
+
 
 -- ==============================================================================
 -- Phase 8: Orders, Payments & Secure Download Vault Tables & RLS Policies
@@ -348,9 +513,12 @@ CREATE TABLE IF NOT EXISTS public.custom_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     buyer_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
+    university TEXT NOT NULL DEFAULT 'Not specified',
     degree TEXT NOT NULL,
     semester INTEGER NOT NULL CHECK (semester >= 1 AND semester <= 8),
     subject TEXT NOT NULL,
+    project_level TEXT NOT NULL DEFAULT 'simple',
+    deliverable_bundle TEXT NOT NULL DEFAULT 'project_only',
     detailed_scope TEXT NOT NULL,
     budget_pkr NUMERIC(10, 2) NOT NULL CHECK (budget_pkr >= 1000),
     deadline DATE NOT NULL,
@@ -364,12 +532,50 @@ CREATE TABLE IF NOT EXISTS public.custom_requests (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
+ALTER TABLE public.custom_requests
+    ADD COLUMN IF NOT EXISTS university TEXT NOT NULL DEFAULT 'Not specified',
+    ADD COLUMN IF NOT EXISTS project_level TEXT NOT NULL DEFAULT 'simple',
+    ADD COLUMN IF NOT EXISTS deliverable_bundle TEXT NOT NULL DEFAULT 'project_only';
+
 ALTER TABLE public.custom_requests ENABLE ROW LEVEL SECURITY;
 
--- Buyers can view and manage their own requests
-CREATE POLICY "Buyers can manage own custom requests"
-ON public.custom_requests FOR ALL
+-- Buyers can create and view their own requests; only admins may moderate them.
+DROP POLICY IF EXISTS "Buyers can manage own custom requests" ON public.custom_requests;
+CREATE POLICY "Buyers can view own custom requests"
+ON public.custom_requests FOR SELECT
 USING (auth.uid() = buyer_id);
+
+CREATE POLICY "Buyers can create own custom requests"
+ON public.custom_requests FOR INSERT
+WITH CHECK (auth.uid() = buyer_id);
+
+CREATE OR REPLACE FUNCTION public.prevent_custom_request_moderation_changes()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF NOT public.is_current_user_admin() THEN
+    IF TG_OP = 'INSERT' THEN
+      IF NEW.status <> 'pending_review' OR NEW.admin_feedback IS NOT NULL THEN
+        RAISE EXCEPTION 'New custom requests must be submitted for administrator review.'
+          USING ERRCODE = '42501';
+      END IF;
+    ELSIF NEW.status IS DISTINCT FROM OLD.status OR
+          NEW.admin_feedback IS DISTINCT FROM OLD.admin_feedback THEN
+      RAISE EXCEPTION 'Only administrators may moderate custom requests.'
+        USING ERRCODE = '42501';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS prevent_custom_request_moderation_changes ON public.custom_requests;
+CREATE TRIGGER prevent_custom_request_moderation_changes
+  BEFORE INSERT OR UPDATE ON public.custom_requests
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_custom_request_moderation_changes();
 
 -- Sellers can view requests that are open for bidding
 CREATE POLICY "Sellers can view open requests"

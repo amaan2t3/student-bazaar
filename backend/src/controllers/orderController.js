@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { supabase, isSupabaseConfigured } from '../config/supabase.js';
+import { isSupabaseConfigured } from '../config/supabase.js';
 
 // In-memory orders and payments store for simulated local mode
 let DEMO_ORDERS = [
@@ -67,10 +67,11 @@ export const checkout = async (req, res) => {
     // Live Supabase Transaction
     if (isSupabaseConfigured) {
       // 1. Fetch project price and seller
-      const { data: project, error: projErr } = await supabase
+      const { data: project, error: projErr } = await req.supabase
         .from('projects')
         .select('*')
         .eq('id', projectId)
+        .eq('status', 'approved')
         .single();
 
       if (projErr || !project) {
@@ -82,7 +83,7 @@ export const checkout = async (req, res) => {
       const sellerEarnings = totalAmount - platformCommission; // 85% to seller
 
       // 2. Insert Order record
-      const { data: newOrder, error: orderErr } = await supabase
+      const { data: newOrder, error: orderErr } = await req.supabase
         .from('orders')
         .insert([{
           order_number: orderNumber,
@@ -104,7 +105,7 @@ export const checkout = async (req, res) => {
       }
 
       // 3. Insert Payment record
-      await supabase
+      const { error: paymentError } = await req.supabase
         .from('payments')
         .insert([{
           order_id: newOrder.id,
@@ -115,8 +116,17 @@ export const checkout = async (req, res) => {
           status: 'successful'
         }]);
 
+      if (paymentError) {
+        console.error('[Checkout Payment Record Error]:', paymentError);
+        return res.status(500).json({ success: false, message: 'Order created but payment record could not be saved.' });
+      }
+
       // 4. Increment project sales and credit seller wallet
-      await supabase.rpc('increment_project_sales', { project_id_param: project.id }).catch(() => {});
+      const { error: salesError } = await req.supabase.rpc('increment_project_sales', { project_id_param: project.id });
+      if (salesError) {
+        console.error('[Checkout Sales Update Error]:', salesError);
+        return res.status(500).json({ success: false, message: 'Order created but project sales could not be updated.' });
+      }
       
       return res.status(201).json({
         success: true,
@@ -207,7 +217,7 @@ export const checkout = async (req, res) => {
 export const getMyPurchases = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('orders')
         .select(`
           *,
@@ -261,7 +271,7 @@ export const generateSecureDownloadUrl = async (req, res) => {
     let orderVerified = false;
 
     if (isSupabaseConfigured) {
-      const { data: order, error } = await supabase
+      const { data: order, error } = await req.supabase
         .from('orders')
         .select('id, payment_status')
         .eq('buyer_id', req.user.id)

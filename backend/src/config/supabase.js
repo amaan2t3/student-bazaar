@@ -8,18 +8,20 @@ if (!globalThis.WebSocket) {
   globalThis.WebSocket = WebSocket;
 }
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://demo-project.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'demo-anon-key';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'demo-service-key';
+const configuredUrl = process.env.SUPABASE_URL;
+const configuredAnonKey = process.env.SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(
-  process.env.SUPABASE_URL && 
-  process.env.SUPABASE_ANON_KEY && 
-  !process.env.SUPABASE_URL.includes('your-project')
+  configuredUrl &&
+  configuredAnonKey &&
+  !configuredUrl.includes('your-project') &&
+  configuredAnonKey !== 'your-anon-public-key'
 );
+const supabaseUrl = configuredUrl || 'http://127.0.0.1:54321';
+const supabaseAnonKey = configuredAnonKey || 'supabase-not-configured';
 
 if (!isSupabaseConfigured) {
-  console.log('⚠️ [Supabase] Running in local simulated mode. Set SUPABASE_URL and SUPABASE_ANON_KEY in backend/.env for live Supabase connection.');
+  console.warn('[Supabase] Authentication and protected API routes are disabled until SUPABASE_URL and SUPABASE_ANON_KEY are configured.');
 }
 
 // Public client for user-authenticated operations
@@ -30,12 +32,29 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Admin client with privileged access for backend role management & storage administration
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
+export const createSupabaseAuthClient = () => {
+  if (!isSupabaseConfigured) throw new Error('Supabase Auth is not configured.');
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+};
+
+export const createSupabaseUserClient = (accessToken) => {
+  if (!isSupabaseConfigured) throw new Error('Supabase Auth is not configured.');
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  });
+};
 
 export default supabase;

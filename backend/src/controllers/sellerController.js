@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../config/supabase.js';
+import { isSupabaseConfigured } from '../config/supabase.js';
 
 // In-memory application store for simulated local mode
 const DEMO_SELLER_APPLICATIONS = [
@@ -48,12 +48,16 @@ export const applyToBecomeSeller = async (req, res) => {
     // Live Supabase
     if (isSupabaseConfigured) {
       // Check existing application
-      const { data: existingApp } = await supabase
+      const { data: existingApp, error: existingAppError } = await req.supabase
         .from('seller_applications')
         .select('*')
         .eq('user_id', req.user.id)
         .eq('status', 'pending')
         .maybeSingle();
+
+      if (existingAppError) {
+        return res.status(400).json({ success: false, message: existingAppError.message });
+      }
 
       if (existingApp) {
         return res.status(400).json({
@@ -62,7 +66,7 @@ export const applyToBecomeSeller = async (req, res) => {
         });
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('seller_applications')
         .insert([{
           user_id: req.user.id,
@@ -133,7 +137,7 @@ export const applyToBecomeSeller = async (req, res) => {
 export const getMyApplication = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('seller_applications')
         .select('*')
         .eq('user_id', req.user.id)
@@ -170,13 +174,12 @@ export const getMyApplication = async (req, res) => {
 export const getAdminApplications = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('seller_applications')
         .select(`
           *,
           profile:user_id (
             full_name,
-            email,
             university,
             degree,
             semester,
@@ -220,29 +223,14 @@ export const reviewApplication = async (req, res) => {
     }
 
     if (isSupabaseConfigured) {
-      // 1. Update application status
-      const { data: updatedApp, error: appError } = await supabase
-        .from('seller_applications')
-        .update({
-          status,
-          admin_feedback,
-          reviewed_by: req.user.id,
-          reviewed_at: new Date().toISOString()
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      const { data: updatedApp, error: appError } = await req.supabase.rpc('review_seller_application', {
+        application_id_param: id,
+        status_param: status,
+        feedback_param: admin_feedback || null
+      });
 
       if (appError) {
         return res.status(400).json({ success: false, message: appError.message });
-      }
-
-      // 2. If approved, promote user role to 'seller' in public.profiles
-      if (status === 'approved') {
-        await supabase
-          .from('profiles')
-          .update({ role: 'seller', is_verified: true })
-          .eq('id', updatedApp.user_id);
       }
 
       return res.status(200).json({

@@ -21,7 +21,7 @@ import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 
 export const MyDownloads = () => {
-  const { user, role, switchRole } = useAuth();
+  const { user } = useAuth();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -116,14 +116,6 @@ export const MyDownloads = () => {
           </p>
         </div>
 
-        {role === 'guest' && (
-          <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center gap-2 text-xs text-amber-800">
-            <span>Please login as a student buyer to view your library.</span>
-            <Button size="sm" variant="secondary" onClick={() => switchRole('buyer')}>
-              Switch to Buyer Persona
-            </Button>
-          </div>
-        )}
       </div>
 
       {error && (

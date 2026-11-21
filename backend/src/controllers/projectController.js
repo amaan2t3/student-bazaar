@@ -196,6 +196,7 @@ export const getProjectBySlug = async (req, res) => {
           )
         `)
         .eq('slug', slug)
+        .eq('status', 'approved')
         .single();
 
       if (error || !data) {
@@ -262,7 +263,7 @@ export const createProject = async (req, res) => {
     const slug = slugify(title);
 
     if (isSupabaseConfigured) {
-      const { data: newProject, error } = await supabase
+      const { data: newProject, error } = await req.supabase
         .from('projects')
         .insert([{
           seller_id: req.user.id,
@@ -293,7 +294,7 @@ export const createProject = async (req, res) => {
       }
 
       // Store file metadata in project_files table
-      await supabase
+      await req.supabase
         .from('project_files')
         .insert([{
           project_id: newProject.id,
@@ -374,7 +375,7 @@ export const createProject = async (req, res) => {
 export const getSellerProjects = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('projects')
         .select('*')
         .eq('seller_id', req.user.id)
@@ -404,7 +405,7 @@ export const getSellerProjects = async (req, res) => {
 export const getAdminModerationQueue = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('projects')
         .select(`
           *,
@@ -448,7 +449,7 @@ export const moderateProject = async (req, res) => {
     }
 
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('projects')
         .update({
           status,

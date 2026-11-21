@@ -47,7 +47,11 @@ export const projectService = {
       const response = await api.get('/projects/admin/moderation');
       return response.data;
     } catch (err) {
-      throw err.response?.data?.message || 'Failed to load moderation queue.';
+      throw err.response?.data?.message || (
+        err.request
+          ? `Cannot reach the API at ${api.defaults.baseURL}. Check that the backend is running and allows this frontend origin.`
+          : err.message || 'Failed to load moderation queue.'
+      );
     }
   },
 

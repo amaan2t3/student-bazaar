@@ -81,6 +81,14 @@ export const UNIVERSITIES = [
   'Quaid-i-Azam University (QAU)'
 ];
 
+const HIGH_TIER_UNIVERSITY_KEYWORDS = ['fast', 'nust', 'giki', 'ned', 'iba', 'pieas'];
+
+export const getUniversityPricingTier = (university) => (
+  HIGH_TIER_UNIVERSITY_KEYWORDS.some((keyword) => university?.toLowerCase().includes(keyword))
+    ? 'high'
+    : 'low'
+);
+
 export const CATEGORIES = [
   { id: 'cat-pf', name: 'Programming Fundamentals', slug: 'programming-fundamentals', count: 42 },
   { id: 'cat-oop', name: 'Object Oriented Programming', slug: 'oop', count: 68 },

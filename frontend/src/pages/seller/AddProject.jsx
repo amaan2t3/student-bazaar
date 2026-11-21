@@ -14,12 +14,10 @@ import {
   DollarSign
 } from 'lucide-react';
 import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, CATEGORIES } from '../../data/mockAcademicData';
-import { useAuth } from '../../context/AuthContext';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
 
 export const AddProject = () => {
-  const { user, role, switchRole } = useAuth();
   const navigate = useNavigate();
 
   // Wizard Step State
@@ -147,14 +145,6 @@ export const AddProject = () => {
           </p>
         </div>
 
-        {role !== 'seller' && role !== 'admin' && (
-          <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center gap-2 text-xs text-amber-800">
-            <span>Requires approved Seller status.</span>
-            <Button size="sm" variant="secondary" onClick={() => switchRole('seller')}>
-              Switch to Seller Persona
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Wizard Progress Steps Bar */}

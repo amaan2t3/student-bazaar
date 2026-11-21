@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../config/supabase.js';
+import { isSupabaseConfigured } from '../config/supabase.js';
 
 // Seed in-memory custom requests for simulated local mode
 let DEMO_CUSTOM_REQUESTS = [
@@ -70,6 +70,26 @@ let DEMO_CUSTOM_REQUESTS = [
   }
 ];
 
+const PROJECT_LEVEL_PRICES = {
+  simple: 5000,
+  modern: 10000,
+  premium: 15000
+};
+
+const DELIVERABLE_EXTRA_PRICES = {
+  project_only: 0,
+  project_with_ppt: 2000,
+  project_ppt_meet: 5000
+};
+
+const HIGH_TIER_UNIVERSITY_KEYWORDS = ['fast', 'nust', 'giki', 'ned', 'iba', 'pieas'];
+
+const getUniversityPriceIncrease = (university) => (
+  HIGH_TIER_UNIVERSITY_KEYWORDS.some((keyword) => university.toLowerCase().includes(keyword))
+    ? 0.1
+    : 0.05
+);
+
 /**
  * @desc   Submit a custom project / assignment request
  * @route  POST /api/v1/custom-requests
@@ -79,41 +99,51 @@ export const createCustomRequest = async (req, res) => {
   try {
     const {
       title,
+      university,
       degree,
       semester,
       subject,
+      project_level,
+      deliverable_bundle,
       detailed_scope,
-      budget_pkr,
       deadline,
       attachment_urls,
       technologies_needed
     } = req.body;
 
-    if (!title || !degree || !semester || !subject || !detailed_scope || !budget_pkr || !deadline) {
+    if (!title || !university || !degree || !semester || !subject || !detailed_scope || !deadline) {
       return res.status(400).json({
         success: false,
-        message: 'All fields (title, degree, semester, subject, detailed_scope, budget_pkr, deadline) are required.'
+        message: 'All fields (title, university, degree, semester, subject, detailed_scope, deadline) are required.'
       });
     }
 
-    if (Number(budget_pkr) < 1000) {
+    if (
+      !Object.prototype.hasOwnProperty.call(PROJECT_LEVEL_PRICES, project_level) ||
+      !Object.prototype.hasOwnProperty.call(DELIVERABLE_EXTRA_PRICES, deliverable_bundle)
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Minimum budget for custom university project requests is PKR 1,000.'
+        message: 'Select a valid project level and deliverables package.'
       });
     }
+    const basePrice = PROJECT_LEVEL_PRICES[project_level] + DELIVERABLE_EXTRA_PRICES[deliverable_bundle];
+    const budgetPKR = Math.round(basePrice * (1 + getUniversityPriceIncrease(university.trim())));
 
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('custom_requests')
         .insert([{
           buyer_id: req.user.id,
           title: title.trim(),
+          university: university.trim(),
           degree,
           semester: Number(semester),
           subject,
+          project_level,
+          deliverable_bundle,
           detailed_scope: detailed_scope.trim(),
-          budget_pkr: Number(budget_pkr),
+          budget_pkr: budgetPKR,
           deadline,
           attachment_urls: Array.isArray(attachment_urls) ? attachment_urls : (attachment_urls ? [attachment_urls] : []),
           technologies_needed: Array.isArray(technologies_needed) ? technologies_needed : (technologies_needed ? [technologies_needed] : []),
@@ -141,11 +171,14 @@ export const createCustomRequest = async (req, res) => {
         avatar: req.user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'
       },
       title: title.trim(),
+      university: university.trim(),
       degree,
       semester: Number(semester),
       subject,
+      project_level,
+      deliverable_bundle,
       detailed_scope: detailed_scope.trim(),
-      budget_pkr: Number(budget_pkr),
+      budget_pkr: budgetPKR,
       deadline,
       attachment_urls: Array.isArray(attachment_urls) ? attachment_urls : (attachment_urls ? [attachment_urls] : ['assignment_manual.pdf']),
       technologies_needed: Array.isArray(technologies_needed) ? technologies_needed : ['React.js', 'Node.js', 'MongoDB'],
@@ -176,7 +209,7 @@ export const createCustomRequest = async (req, res) => {
 export const getMyCustomRequests = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('custom_requests')
         .select('*')
         .eq('buyer_id', req.user.id)
@@ -208,7 +241,7 @@ export const getOpenRequestsFeed = async (req, res) => {
     const { degree, semester, subject, search } = req.query;
 
     if (isSupabaseConfigured) {
-      let query = supabase
+      let query = req.supabase
         .from('custom_requests')
         .select(`
           *,
@@ -267,7 +300,7 @@ export const getSingleCustomRequest = async (req, res) => {
     const { id } = req.params;
 
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('custom_requests')
         .select(`
           *,
@@ -308,13 +341,12 @@ export const getSingleCustomRequest = async (req, res) => {
 export const getAdminCustomRequestsQueue = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('custom_requests')
         .select(`
           *,
           buyer:buyer_id (
             full_name,
-            email,
             university
           )
         `)
@@ -353,7 +385,7 @@ export const moderateCustomRequest = async (req, res) => {
     }
 
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
+      const { data, error } = await req.supabase
         .from('custom_requests')
         .update({
           status,

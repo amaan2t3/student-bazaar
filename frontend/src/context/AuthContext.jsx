@@ -1,151 +1,165 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import authService from '../services/authService';
+import { supabase } from '../services/supabase';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('sb_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(() => localStorage.getItem('sb_token') || null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
-
-  // Sync session to localStorage
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('sb_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('sb_user');
-    }
-  }, [user]);
+  const [recoveryMode, setRecoveryMode] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('sb_token', token);
-    } else {
-      localStorage.removeItem('sb_token');
-    }
-  }, [token]);
+    let active = true;
+    let profileRequest = 0;
+    localStorage.removeItem('sb_user');
+    localStorage.removeItem('sb_token');
 
-  // Real login action via authService
+    const syncSession = async (nextSession) => {
+      const requestId = ++profileRequest;
+      if (!active) return;
+
+      setSession(nextSession);
+      if (!nextSession) {
+        setUser(null);
+        setAuthError(null);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const profile = await authService.getMe(nextSession.access_token);
+        if (active && requestId === profileRequest) {
+          setUser(profile);
+          setAuthError(null);
+        }
+      } catch (error) {
+        if (active && requestId === profileRequest) {
+          setUser(null);
+          setAuthError(error.message);
+        }
+      } finally {
+        if (active && requestId === profileRequest) setLoading(false);
+      }
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'PASSWORD_RECOVERY') setRecoveryMode(true);
+      void syncSession(nextSession);
+    });
+
+    supabase.auth.getSession()
+      .then(({ data, error }) => {
+        if (error) throw error;
+        void syncSession(data.session);
+      })
+      .catch((error) => {
+        if (active) {
+          setAuthError(error.message || 'Unable to restore your login session.');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const loginWithCredentials = async (email, password) => {
     setLoading(true);
     setAuthError(null);
     try {
-      const result = await authService.login(email, password);
-      const authenticatedUser = result.data.user;
-      const sessionToken = result.data.token;
-      
-      setUser(authenticatedUser);
-      setToken(sessionToken);
+      const nextSession = await authService.login(email, password);
+      const profile = await authService.getMe(nextSession.access_token);
+      setSession(nextSession);
+      setUser(profile);
+      return profile;
+    } catch (error) {
+      const message = error.message || 'Login failed. Please check your credentials.';
+      setAuthError(message);
+      throw new Error(message);
+    } finally {
       setLoading(false);
-      return authenticatedUser;
-    } catch (err) {
-      setLoading(false);
-      setAuthError(typeof err === 'string' ? err : 'Invalid login credentials.');
-      throw err;
     }
   };
 
-  // Real register action via authService
   const registerUser = async (formData) => {
     setLoading(true);
     setAuthError(null);
     try {
-      const result = await authService.register(formData);
-      const registeredUser = result.data.user;
-      const sessionToken = result.data.token;
-
-      if (sessionToken) {
-        setUser(registeredUser);
-        setToken(sessionToken);
+      const registration = await authService.register(formData);
+      if (registration.session) {
+        const profile = await authService.getMe(registration.session.access_token);
+        setSession(registration.session);
+        setUser(profile);
       }
+      return registration;
+    } catch (error) {
+      const message = error.message || 'Registration failed.';
+      setAuthError(message);
+      throw new Error(message);
+    } finally {
       setLoading(false);
-      return result;
-    } catch (err) {
-      setLoading(false);
-      setAuthError(typeof err === 'string' ? err : 'Registration failed.');
-      throw err;
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setAuthError(error.message);
+      throw error;
+    }
+    setSession(null);
     setUser(null);
-    setToken(null);
-    localStorage.removeItem('sb_user');
-    localStorage.removeItem('sb_token');
+    setAuthError(null);
   };
 
-  // Quick Persona Switcher for Evaluation and Testing
-  const switchRole = (newRole) => {
-    if (newRole === 'guest') {
-      logout();
-      return;
+  const requestPasswordReset = async (email) => {
+    setAuthError(null);
+    try {
+      await authService.requestPasswordReset(email);
+    } catch (error) {
+      setAuthError(error.message);
+      throw error;
     }
+  };
 
-    const mockRoles = {
-      buyer: {
-        id: 'usr-buyer-01',
-        full_name: 'Ali Raza',
-        email: 'ali.raza@student.edu.pk',
-        role: 'buyer',
-        university: 'FAST-NUCES Lahore',
-        degree: 'BSIT',
-        semester: 4,
-        avatar_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150',
-        wallet_balance: 12500,
-        escrow_balance: 5000
-      },
-      seller: {
-        id: 'usr-seller-01',
-        full_name: 'Muhammad Usman (Seller)',
-        email: 'usman.dev@student.edu.pk',
-        role: 'seller',
-        university: 'PUCIT Lahore',
-        degree: 'BSCS',
-        semester: 7,
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
-        wallet_balance: 48500,
-        escrow_balance: 11000
-      },
-      admin: {
-        id: 'usr-admin-01',
-        full_name: 'Prof. Tariq Mahmood (Admin)',
-        email: 'admin@studentbazaar.pk',
-        role: 'admin',
-        university: 'Platform Operations',
-        degree: 'Faculty / Admin',
-        semester: 8,
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150',
-        wallet_balance: 0,
-        escrow_balance: 0
-      }
-    };
-
-    const targetUser = mockRoles[newRole] || mockRoles.buyer;
-    setUser(targetUser);
-    setToken(`mock-token-${targetUser.role}`);
+  const updatePassword = async (password) => {
+    setAuthError(null);
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      setAuthError(error.message);
+      throw error;
+    }
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) {
+      setAuthError(signOutError.message);
+      throw signOutError;
+    }
+    setSession(null);
+    setUser(null);
+    setRecoveryMode(false);
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      token,
+      session,
+      token: session?.access_token || null,
       role: user?.role || 'guest',
       loading,
       authError,
+      recoveryMode,
       setAuthError,
       loginWithCredentials,
       registerUser,
-      logout,
-      switchRole
+      requestPasswordReset,
+      updatePassword,
+      logout
     }}>
       {children}
     </AuthContext.Provider>

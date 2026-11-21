@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   X, 
   ShieldCheck, 
@@ -61,7 +61,32 @@ export const CheckoutModal = ({ project, isOpen, onClose }) => {
           <X className="w-5 h-5" />
         </button>
 
-        {!orderReceipt ? (
+        {!user ? (
+          <div className="space-y-4 text-center">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-ivory text-navy text-[11px] font-semibold border border-gold-soft">
+              <ShieldCheck className="w-3.5 h-3.5 text-gold" />
+              <span>Sign in required to purchase</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Browse freely, sign in to buy</h3>
+            <p className="text-sm text-slate-600">
+              You can explore this project without an account. Sign in or register when you are ready to purchase it.
+            </p>
+            <Link
+              to="/login"
+              state={{ from: `/project/${project.slug}` }}
+              className="inline-flex w-full"
+            >
+              <Button variant="primary" className="w-full">Sign in to continue</Button>
+            </Link>
+            <Link
+              to="/register"
+              state={{ from: `/project/${project.slug}` }}
+              className="block text-xs font-semibold text-gold underline"
+            >
+              Create an account
+            </Link>
+          </div>
+        ) : !orderReceipt ? (
           /* STEP 1: Payment Checkout Form */
           <div className="space-y-5">
             <div>

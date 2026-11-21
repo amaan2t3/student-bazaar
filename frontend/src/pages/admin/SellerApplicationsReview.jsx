@@ -12,13 +12,11 @@ import {
   Search,
   Filter
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import sellerService from '../../services/sellerService';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 
 export const SellerApplicationsReview = () => {
-  const { role, switchRole } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'pending' | 'approved' | 'rejected'
@@ -78,15 +76,6 @@ export const SellerApplicationsReview = () => {
           </p>
         </div>
 
-        {/* Quick Admin Role Enabler if testing as another persona */}
-        {role !== 'admin' && (
-          <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center gap-2 text-xs text-amber-800">
-            <span>Currently testing as <strong>{role}</strong>.</span>
-            <Button size="sm" variant="secondary" onClick={() => switchRole('admin')}>
-              Switch to Admin Persona
-            </Button>
-          </div>
-        )}
       </div>
 
       {actionSuccess && (
