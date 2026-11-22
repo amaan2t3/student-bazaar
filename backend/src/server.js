@@ -8,6 +8,8 @@ import projectRoutes from './routes/projectRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import customRequestRoutes from './routes/customRequestRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
+import teamRoutes from './routes/teamRoutes.js';
 import { isSupabaseConfigured } from './config/supabase.js';
 
 dotenv.config();
@@ -43,7 +45,8 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
 // Health check endpoint
@@ -64,6 +67,8 @@ app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/custom-requests', customRequestRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/team', teamRoutes);
 
 // 404 Route Handler
 app.use('*', (req, res) => {

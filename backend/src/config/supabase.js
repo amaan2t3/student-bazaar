@@ -32,6 +32,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
+const configuredServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+export const supabaseAdmin = (isSupabaseConfigured && configuredServiceKey)
+  ? createClient(supabaseUrl, configuredServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : supabase;
+
 export const createSupabaseAuthClient = () => {
   if (!isSupabaseConfigured) throw new Error('Supabase Auth is not configured.');
   return createClient(supabaseUrl, supabaseAnonKey, {

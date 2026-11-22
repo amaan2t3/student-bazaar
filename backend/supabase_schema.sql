@@ -649,6 +649,10 @@ GRANT EXECUTE ON FUNCTION public.admin_dashboard_totals() TO authenticated;
 
 -- Table privileges are required in addition to RLS policies. RLS continues
 -- to limit each authenticated user to rows permitted by the policies above.
+GRANT SELECT ON public.projects TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.projects TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.project_files TO authenticated;
 GRANT SELECT ON public.orders TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.custom_requests TO authenticated;
-GRANT SELECT, INSERT ON public.seller_applications TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.custom_requests TO authenticated;
+GRANT SELECT ON public.custom_requests TO anon;
+GRANT SELECT, INSERT, UPDATE ON public.seller_applications TO authenticated;

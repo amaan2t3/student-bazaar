@@ -68,6 +68,8 @@ export const Footer = () => {
               <li><Link to="/custom-request" className="hover:text-[#D6B779] transition-colors">Request Custom Project</Link></li>
               <li><Link to="/how-it-works" className="hover:text-[#D6B779] transition-colors">How It Works</Link></li>
               <li><Link to="/academic-integrity" className="hover:text-[#D6B779] transition-colors">Academic Integrity</Link></li>
+              <li><Link to="/team" className="hover:text-[#D6B779] transition-colors">Our Team</Link></li>
+              <li><Link to="/contact" className="hover:text-[#D6B779] transition-colors">Contact Us</Link></li>
               <li><span className="text-[#D6B779] font-medium">PKR Payouts (JazzCash/EasyPaisa)</span></li>
             </ul>
           </div>

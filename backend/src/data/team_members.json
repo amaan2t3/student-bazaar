@@ -1,0 +1,62 @@
+[
+  {
+    "id": "team-01",
+    "name": "Zeeshan",
+    "role": "Founder & Full-Stack Architect",
+    "university": "FAST-NUCES Lahore",
+    "bio": "BS Computer Science senior passionate about distributed systems and empowering Pakistani student developers to monetize their coursework safely.",
+    "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+    "linkedin_url": "https://linkedin.com",
+    "github_url": "https://github.com",
+    "twitter_url": "https://twitter.com",
+    "display_order": 1,
+    "is_active": true,
+    "created_at": "2026-09-23T06:00:00.000Z",
+    "updated_at": "2026-11-22T10:33:01.024Z"
+  },
+  {
+    "id": "team-02",
+    "name": "Syeda Fatima Zahra",
+    "role": "Co-Founder & UI/UX Product Designer",
+    "university": "NUST SEECS Islamabad",
+    "bio": "Software Engineering graduate specializing in intuitive student experiences, academic integrity workflows, and clean design systems.",
+    "avatar_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+    "linkedin_url": "https://linkedin.com",
+    "github_url": "https://github.com",
+    "twitter_url": "https://twitter.com",
+    "display_order": 2,
+    "is_active": true,
+    "created_at": "2026-10-03T06:00:00.000Z",
+    "updated_at": "2026-10-03T06:00:00.000Z"
+  },
+  {
+    "id": "team-03",
+    "name": "Bilal Ahmed",
+    "role": "Lead Backend & Security Engineer",
+    "university": "PUCIT Lahore",
+    "bio": "Passionate about PostgreSQL, row-level security, and escrow verification pipelines ensuring authentic PKR university transactions.",
+    "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
+    "linkedin_url": "https://linkedin.com",
+    "github_url": "https://github.com",
+    "twitter_url": null,
+    "display_order": 3,
+    "is_active": true,
+    "created_at": "2026-10-13T06:00:00.000Z",
+    "updated_at": "2026-10-13T06:00:00.000Z"
+  },
+  {
+    "id": "team-04",
+    "name": "Amina Tariq",
+    "role": "Academic Verification & Code Quality Lead",
+    "university": "COMSATS Islamabad",
+    "bio": "Oversees student ID validation, code review standards, and ensuring all uploaded repositories meet strict university viva guidelines.",
+    "avatar_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
+    "linkedin_url": "https://linkedin.com",
+    "github_url": "https://github.com",
+    "twitter_url": null,
+    "display_order": 4,
+    "is_active": true,
+    "created_at": "2026-10-23T06:00:00.000Z",
+    "updated_at": "2026-10-23T06:00:00.000Z"
+  }
+]

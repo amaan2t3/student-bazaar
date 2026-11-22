@@ -8,6 +8,8 @@ import ProjectDetails from '../pages/public/ProjectDetails';
 import CustomProjectRequest from '../pages/public/CustomProjectRequest';
 import HowItWorks from '../pages/public/HowItWorks';
 import AcademicIntegrity from '../pages/public/AcademicIntegrity';
+import Contact from '../pages/public/Contact';
+import OurTeam from '../pages/public/OurTeam';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import BecomeSeller from '../pages/seller/BecomeSeller';
@@ -18,6 +20,9 @@ import AddProject from '../pages/seller/AddProject';
 import MyProjects from '../pages/seller/MyProjects';
 import ProjectModeration from '../pages/admin/ProjectModeration';
 import AdminProjectDetails from '../pages/admin/AdminProjectDetails';
+import ContactMessages from '../pages/admin/ContactMessages';
+import TeamManagement from '../pages/admin/TeamManagement';
+import ContactSettings from '../pages/admin/ContactSettings';
 import MyDownloads from '../pages/buyer/MyDownloads';
 import NotFound from '../pages/public/NotFound';
 
@@ -50,6 +55,9 @@ export const AppRoutes = () => {
         <Route path="/custom-request" element={<HideMarketplaceForAdmin><CustomProjectRequest /></HideMarketplaceForAdmin>} />
         <Route path="/how-it-works" element={<HideMarketplaceForAdmin><HowItWorks /></HideMarketplaceForAdmin>} />
         <Route path="/academic-integrity" element={<HideMarketplaceForAdmin><AcademicIntegrity /></HideMarketplaceForAdmin>} />
+        <Route path="/contact" element={<HideMarketplaceForAdmin><Contact /></HideMarketplaceForAdmin>} />
+        <Route path="/team" element={<HideMarketplaceForAdmin><OurTeam /></HideMarketplaceForAdmin>} />
+        <Route path="/our-team" element={<HideMarketplaceForAdmin><OurTeam /></HideMarketplaceForAdmin>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
@@ -66,6 +74,11 @@ export const AppRoutes = () => {
         <Route path="/admin/projects/new" element={<RequireRole roles={['admin']}><AddProject /></RequireRole>} />
         <Route path="/admin/projects/:id" element={<RequireRole roles={['admin']}><AdminProjectDetails /></RequireRole>} />
         <Route path="/admin/project-moderation" element={<RequireRole roles={['admin']}><ProjectModeration /></RequireRole>} />
+
+        {/* Contact & Team Management */}
+        <Route path="/admin/contact-messages" element={<RequireRole roles={['admin']}><ContactMessages /></RequireRole>} />
+        <Route path="/admin/team" element={<RequireRole roles={['admin']}><TeamManagement /></RequireRole>} />
+        <Route path="/admin/contact-settings" element={<RequireRole roles={['admin']}><ContactSettings /></RequireRole>} />
 
         {/* Phase 8 Buyer Private Download Vault */}
         <Route path="/my-downloads" element={<RequireRole roles={['buyer']}><MyDownloads /></RequireRole>} />
