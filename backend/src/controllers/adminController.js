@@ -1,45 +1,25 @@
-import { getUnreadMessagesCount } from './contactController.js';
-
 export const getDashboardStats = async (req, res) => {
   try {
-    let totalPaidRevenue = 0;
-    let totalRequestBudget = 0;
-    let unreadMessagesCount = getUnreadMessagesCount();
-
-    if (req.supabase) {
-      try {
-        const { data, error } = await req.supabase.rpc('admin_dashboard_totals');
-        if (!error && data) {
-          const totals = Array.isArray(data) ? data[0] : data;
-          if (totals) {
-            totalPaidRevenue = Number(totals.total_paid_revenue || 0);
-            totalRequestBudget = Number(totals.total_request_budget || 0);
-          }
-        }
-      } catch (rpcErr) {
-        console.warn('[Admin Dashboard Stats RPC Warning]:', rpcErr.message);
-      }
-
-      try {
-        const { count, error: countErr } = await req.supabase
-          .from('contact_messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'unread');
-
-        if (!countErr && typeof count === 'number') {
-          unreadMessagesCount = count;
-        }
-      } catch (countErr) {
-        // Fallback to in-memory count
-      }
+    if (!req.supabase) {
+      return res.status(503).json({ success: false, message: 'Dashboard data is unavailable until Supabase is configured.' });
     }
 
+    const { data: totalsData, error: totalsError } = await req.supabase.rpc('admin_dashboard_totals');
+    if (totalsError) return res.status(400).json({ success: false, message: totalsError.message });
+
+    const { count: unreadMessagesCount, error: countError } = await req.supabase
+      .from('contact_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'unread');
+    if (countError) return res.status(400).json({ success: false, message: countError.message });
+
+    const totals = Array.isArray(totalsData) ? totalsData[0] : totalsData;
     return res.status(200).json({
       success: true,
       data: {
-        total_paid_revenue: totalPaidRevenue,
-        total_request_budget: totalRequestBudget,
-        unread_contact_messages: unreadMessagesCount
+        total_paid_revenue: Number(totals?.total_paid_revenue || 0),
+        total_request_budget: Number(totals?.total_request_budget || 0),
+        unread_contact_messages: unreadMessagesCount || 0
       }
     });
   } catch (error) {

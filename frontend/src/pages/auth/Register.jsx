@@ -13,7 +13,7 @@ import {
   Building
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { DEGREES } from '../../data/mockAcademicData';
+import { DEGREES } from '../../data/academicData';
 import Button from '../../components/common/Button';
 import UniversitySelect from '../../components/common/UniversitySelect';
 

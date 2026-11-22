@@ -72,6 +72,7 @@ export const AppRoutes = () => {
         <Route path="/seller/my-projects" element={<RequireRole roles={['seller']}><MyProjects /></RequireRole>} />
         <Route path="/admin/projects" element={<RequireRole roles={['admin']}><ProjectModeration /></RequireRole>} />
         <Route path="/admin/projects/new" element={<RequireRole roles={['admin']}><AddProject /></RequireRole>} />
+        <Route path="/admin/projects/:id/edit" element={<RequireRole roles={['admin']}><AddProject /></RequireRole>} />
         <Route path="/admin/projects/:id" element={<RequireRole roles={['admin']}><AdminProjectDetails /></RequireRole>} />
         <Route path="/admin/project-moderation" element={<RequireRole roles={['admin']}><ProjectModeration /></RequireRole>} />
 

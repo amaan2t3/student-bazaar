@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import customRequestService from '../../services/customRequestService';
-import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, getUniversityPricingTier } from '../../data/mockAcademicData';
+import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, getUniversityPricingTier } from '../../data/academicData';
 import Button from '../../components/common/Button';
 import UniversitySelect from '../../components/common/UniversitySelect';
 

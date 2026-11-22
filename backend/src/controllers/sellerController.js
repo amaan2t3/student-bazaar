@@ -1,27 +1,6 @@
 import { isSupabaseConfigured } from '../config/supabase.js';
 import { sendAdminDecisionEmail } from '../services/adminNotificationService.js';
 
-// In-memory application store for simulated local mode
-const DEMO_SELLER_APPLICATIONS = [
-  {
-    id: 'app-demo-01',
-    user_id: 'usr-buyer-01',
-    user_name: 'Ali Raza',
-    user_email: 'ali.raza@student.edu.pk',
-    university: 'FAST-NUCES Lahore',
-    degree: 'BSIT',
-    semester: 4,
-    github_url: 'https://github.com/aliraza-fast',
-    portfolio_url: 'https://aliraza.dev',
-    id_card_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=600',
-    specializations: ['React.js', 'Node.js', 'MySQL', 'Database Systems', 'C++'],
-    bio: 'Dean’s Honor List student at FAST Lahore with 3.82 CGPA. Built top-grade database systems and MERN portals.',
-    status: 'pending',
-    admin_feedback: null,
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString()
-  }
-];
-
 /**
  * @desc   Submit a seller onboarding application
  * @route  POST /api/v1/sellers/apply
@@ -95,32 +74,7 @@ export const applyToBecomeSeller = async (req, res) => {
       });
     }
 
-    // Simulated Local Mode
-    const newApp = {
-      id: `app-${Date.now()}`,
-      user_id: req.user.id,
-      user_name: req.user.full_name || req.user.name,
-      user_email: req.user.email,
-      university: req.user.university,
-      degree: req.user.degree,
-      semester: req.user.semester,
-      github_url,
-      portfolio_url: portfolio_url || '',
-      id_card_url,
-      specializations: Array.isArray(specializations) ? specializations : [specializations],
-      bio: bio || '',
-      status: 'pending',
-      admin_feedback: null,
-      created_at: new Date().toISOString()
-    };
-
-    DEMO_SELLER_APPLICATIONS.unshift(newApp);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Seller application submitted successfully for review.',
-      data: newApp
-    });
+    return res.status(503).json({ success: false, message: 'Seller applications are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Apply Seller Error]:', err);
     return res.status(500).json({
@@ -156,11 +110,7 @@ export const getMyApplication = async (req, res) => {
       });
     }
 
-    const app = DEMO_SELLER_APPLICATIONS.find(a => a.user_id === req.user.id) || null;
-    return res.status(200).json({
-      success: true,
-      data: app
-    });
+    return res.status(503).json({ success: false, message: 'Seller applications are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Get My App Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -196,10 +146,7 @@ export const getAdminApplications = async (req, res) => {
       return res.status(200).json({ success: true, data });
     }
 
-    return res.status(200).json({
-      success: true,
-      data: DEMO_SELLER_APPLICATIONS
-    });
+    return res.status(503).json({ success: false, message: 'Seller applications are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Admin Apps Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -253,21 +200,7 @@ export const reviewApplication = async (req, res) => {
       });
     }
 
-    // Simulated Local Mode
-    const target = DEMO_SELLER_APPLICATIONS.find(a => a.id === id);
-    if (!target) {
-      return res.status(404).json({ success: false, message: 'Application not found.' });
-    }
-
-    target.status = status;
-    target.admin_feedback = admin_feedback || null;
-    target.reviewed_at = new Date().toISOString();
-
-    return res.status(200).json({
-      success: true,
-      message: `Seller application marked as ${status}.`,
-      data: target
-    });
+    return res.status(503).json({ success: false, message: 'Seller application review is unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Review App Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error reviewing application.' });

@@ -1,76 +1,6 @@
 import { isSupabaseConfigured } from '../config/supabase.js';
 import { sendAdminDecisionEmail } from '../services/adminNotificationService.js';
 
-// Seed in-memory custom requests for simulated local mode
-let DEMO_CUSTOM_REQUESTS = [
-  {
-    id: 'cr-demo-01',
-    buyer_id: 'usr-buyer-01',
-    buyer: {
-      name: 'Ali Raza',
-      university: 'FAST-NUCES Lahore',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'
-    },
-    title: 'Online Examination Portal with WebCam Anti-Cheat System',
-    degree: 'BSIT',
-    semester: 6,
-    subject: 'Web Engineering',
-    detailed_scope: 'Looking for a React + Node.js portal where instructors can upload MCQs with time limits. Must include face-detection alert if student looks away from screen during quiz. Complete SRS and schema required.',
-    budget_pkr: 6500,
-    deadline: '2026-12-05',
-    attachment_urls: ['exam_portal_assignment_rubric.pdf'],
-    technologies_needed: ['React.js', 'Node.js', 'TensorFlow.js', 'MongoDB'],
-    proposals_count: 3,
-    status: 'open_for_bidding',
-    admin_feedback: null,
-    created_at: new Date(Date.now() - 3600000 * 36).toISOString()
-  },
-  {
-    id: 'cr-demo-02',
-    buyer_id: 'usr-buyer-02',
-    buyer: {
-      name: 'Hamza Khan',
-      university: 'PUCIT Lahore',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150'
-    },
-    title: 'Multi-Threaded Server-Client Chat Room in Java with RSA Encryption',
-    degree: 'BSCS',
-    semester: 5,
-    subject: 'Computer Networks',
-    detailed_scope: 'Requires Java Socket Programming with thread pool, RSA key exchange for encryption, and file transfer capability between clients. Swing GUI needed.',
-    budget_pkr: 4500,
-    deadline: '2026-12-02',
-    attachment_urls: ['java_socket_lab_prompt.pdf'],
-    technologies_needed: ['Java', 'Socket Programming', 'Cryptography', 'Swing GUI'],
-    proposals_count: 5,
-    status: 'open_for_bidding',
-    admin_feedback: null,
-    created_at: new Date(Date.now() - 3600000 * 20).toISOString()
-  },
-  {
-    id: 'cr-demo-03',
-    buyer_id: 'usr-buyer-01',
-    buyer: {
-      name: 'Ali Raza',
-      university: 'FAST-NUCES Lahore',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'
-    },
-    title: 'Real Estate Price Prediction Model using Random Forest & XGBoost',
-    degree: 'BSDS',
-    semester: 5,
-    subject: 'Machine Learning for Data Science',
-    detailed_scope: 'Need regression pipeline trained on Pakistani property dataset with outlier removal, hyperparameter tuning, and model evaluation metrics (RMSE, R2 score).',
-    budget_pkr: 5000,
-    deadline: '2026-12-10',
-    attachment_urls: ['ml_project_spec.pdf'],
-    technologies_needed: ['Python', 'Scikit-Learn', 'XGBoost', 'Pandas', 'Flask'],
-    proposals_count: 0,
-    status: 'pending_review',
-    admin_feedback: null,
-    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
-  }
-];
-
 const PROJECT_LEVEL_PRICES = {
   simple: 5000,
   modern: 10000,
@@ -162,40 +92,7 @@ export const createCustomRequest = async (req, res) => {
       });
     }
 
-    // Simulated Local Mode
-    const newRequest = {
-      id: `cr-${Date.now()}`,
-      buyer_id: req.user.id,
-      buyer: {
-        name: req.user.full_name || req.user.name,
-        university: req.user.university,
-        avatar: req.user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'
-      },
-      title: title.trim(),
-      university: university.trim(),
-      degree,
-      semester: Number(semester),
-      subject,
-      project_level,
-      deliverable_bundle,
-      detailed_scope: detailed_scope.trim(),
-      budget_pkr: budgetPKR,
-      deadline,
-      attachment_urls: Array.isArray(attachment_urls) ? attachment_urls : (attachment_urls ? [attachment_urls] : ['assignment_manual.pdf']),
-      technologies_needed: Array.isArray(technologies_needed) ? technologies_needed : ['React.js', 'Node.js', 'MongoDB'],
-      proposals_count: 0,
-      status: 'pending_review',
-      admin_feedback: null,
-      created_at: new Date().toISOString()
-    };
-
-    DEMO_CUSTOM_REQUESTS.unshift(newRequest);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Custom project request submitted successfully! Queued for admin review.',
-      data: newRequest
-    });
+    return res.status(503).json({ success: false, message: 'Custom requests are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Create Custom Request Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error creating custom request.' });
@@ -220,12 +117,7 @@ export const getMyCustomRequests = async (req, res) => {
       return res.status(200).json({ success: true, count: data.length, data });
     }
 
-    const myRequests = DEMO_CUSTOM_REQUESTS.filter(r => r.buyer_id === req.user.id || req.user.role === 'buyer');
-    return res.status(200).json({
-      success: true,
-      count: myRequests.length,
-      data: myRequests
-    });
+    return res.status(503).json({ success: false, message: 'Custom requests are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Get My Requests Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -266,25 +158,7 @@ export const getOpenRequestsFeed = async (req, res) => {
       return res.status(200).json({ success: true, count: data.length, data });
     }
 
-    // Simulated Local Mode Feed
-    let openRequests = DEMO_CUSTOM_REQUESTS.filter(r => r.status === 'open_for_bidding');
-
-    if (degree) openRequests = openRequests.filter(r => r.degree === degree);
-    if (semester) openRequests = openRequests.filter(r => r.semester === Number(semester));
-    if (subject) openRequests = openRequests.filter(r => r.subject.toLowerCase().includes(subject.toLowerCase()));
-    if (search) {
-      const q = search.toLowerCase();
-      openRequests = openRequests.filter(r => 
-        r.title.toLowerCase().includes(q) || 
-        r.detailed_scope.toLowerCase().includes(q)
-      );
-    }
-
-    return res.status(200).json({
-      success: true,
-      count: openRequests.length,
-      data: openRequests
-    });
+    return res.status(503).json({ success: false, message: 'Custom requests are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Get Opportunities Feed Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -322,12 +196,7 @@ export const getSingleCustomRequest = async (req, res) => {
       return res.status(200).json({ success: true, data });
     }
 
-    const request = DEMO_CUSTOM_REQUESTS.find(r => r.id === id);
-    if (!request) {
-      return res.status(404).json({ success: false, message: 'Custom request not found.' });
-    }
-
-    return res.status(200).json({ success: true, data: request });
+    return res.status(503).json({ success: false, message: 'Custom requests are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Get Single Request Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -357,11 +226,7 @@ export const getAdminCustomRequestsQueue = async (req, res) => {
       return res.status(200).json({ success: true, count: data.length, data });
     }
 
-    return res.status(200).json({
-      success: true,
-      count: DEMO_CUSTOM_REQUESTS.length,
-      data: DEMO_CUSTOM_REQUESTS
-    });
+    return res.status(503).json({ success: false, message: 'Custom requests are unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Admin Custom Requests Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
@@ -419,19 +284,7 @@ export const moderateCustomRequest = async (req, res) => {
       });
     }
 
-    const request = DEMO_CUSTOM_REQUESTS.find(r => r.id === id);
-    if (!request) {
-      return res.status(404).json({ success: false, message: 'Request not found.' });
-    }
-
-    request.status = status;
-    request.admin_feedback = admin_feedback || null;
-
-    return res.status(200).json({
-      success: true,
-      message: `Custom request marked as ${status}.`,
-      data: request
-    });
+    return res.status(503).json({ success: false, message: 'Custom request moderation is unavailable until Supabase is configured.' });
   } catch (err) {
     console.error('[Moderate Request Error]:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });

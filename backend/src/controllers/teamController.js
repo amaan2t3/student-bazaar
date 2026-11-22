@@ -7,70 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, '../data/team_members.json');
 
-// Initial default seed members
-const INITIAL_DEMO_TEAM_MEMBERS = [
-  {
-    id: 'team-01',
-    name: 'Muhammad Daniyal',
-    role: 'Founder & Full-Stack Architect',
-    university: 'FAST-NUCES Lahore',
-    bio: 'BS Computer Science senior passionate about distributed systems and empowering Pakistani student developers to monetize their coursework safely.',
-    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-    linkedin_url: 'https://linkedin.com',
-    github_url: 'https://github.com',
-    twitter_url: 'https://twitter.com',
-    display_order: 1,
-    is_active: true,
-    created_at: new Date(Date.now() - 3600000 * 24 * 60).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 24 * 60).toISOString()
-  },
-  {
-    id: 'team-02',
-    name: 'Syeda Fatima Zahra',
-    role: 'Co-Founder & UI/UX Product Designer',
-    university: 'NUST SEECS Islamabad',
-    bio: 'Software Engineering graduate specializing in intuitive student experiences, academic integrity workflows, and clean design systems.',
-    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
-    linkedin_url: 'https://linkedin.com',
-    github_url: 'https://github.com',
-    twitter_url: 'https://twitter.com',
-    display_order: 2,
-    is_active: true,
-    created_at: new Date(Date.now() - 3600000 * 24 * 50).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 24 * 50).toISOString()
-  },
-  {
-    id: 'team-03',
-    name: 'Bilal Ahmed',
-    role: 'Lead Backend & Security Engineer',
-    university: 'PUCIT Lahore',
-    bio: 'Passionate about PostgreSQL, row-level security, and escrow verification pipelines ensuring authentic PKR university transactions.',
-    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
-    linkedin_url: 'https://linkedin.com',
-    github_url: 'https://github.com',
-    twitter_url: null,
-    display_order: 3,
-    is_active: true,
-    created_at: new Date(Date.now() - 3600000 * 24 * 40).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 24 * 40).toISOString()
-  },
-  {
-    id: 'team-04',
-    name: 'Amina Tariq',
-    role: 'Academic Verification & Code Quality Lead',
-    university: 'COMSATS Islamabad',
-    bio: 'Oversees student ID validation, code review standards, and ensuring all uploaded repositories meet strict university viva guidelines.',
-    avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400',
-    linkedin_url: 'https://linkedin.com',
-    github_url: 'https://github.com',
-    twitter_url: null,
-    display_order: 4,
-    is_active: true,
-    created_at: new Date(Date.now() - 3600000 * 24 * 30).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 24 * 30).toISOString()
-  }
-];
-
 // Persistent file-backed storage helpers
 const loadDiskMembers = () => {
   try {
@@ -84,7 +20,7 @@ const loadDiskMembers = () => {
   } catch (err) {
     console.warn('[Disk Storage Warning]:', err.message);
   }
-  return [...INITIAL_DEMO_TEAM_MEMBERS];
+  return [];
 };
 
 const saveDiskMembers = (members) => {
@@ -105,7 +41,7 @@ const saveDiskMembers = (members) => {
 export const getTeamMembers = async (req, res) => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await (req.supabase || supabaseAdmin || supabase)
+      const { data, error } = await supabase
         .from('team_members')
         .select('*')
         .eq('is_active', true)
@@ -199,7 +135,7 @@ export const createTeamMember = async (req, res) => {
       role: role.trim(),
       university: university.trim(),
       bio: bio.trim(),
-      avatar_url: avatar_url?.trim() || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+      avatar_url: avatar_url?.trim() || null,
       linkedin_url: linkedin_url?.trim() || null,
       github_url: github_url?.trim() || null,
       twitter_url: twitter_url?.trim() || null,

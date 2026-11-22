@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { 
   UploadCloud, 
   Sparkles, 
@@ -13,14 +13,18 @@ import {
   ArrowLeft,
   DollarSign
 } from 'lucide-react';
-import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, CATEGORIES } from '../../data/mockAcademicData';
+import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE, CATEGORIES } from '../../data/academicData';
 import { useAuth } from '../../context/AuthContext';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
+import { isSupabaseConfigured, supabase } from '../../services/supabase';
 
 export const AddProject = () => {
   const { role } = useAuth();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const isAdmin = role === 'admin';
+  const isEditing = Boolean(id);
 
   // Wizard Step State
   const [step, setStep] = useState(1);
@@ -28,39 +32,105 @@ export const AddProject = () => {
   // Form Fields
   const [degree, setDegree] = useState('BSCS');
   const [semester, setSemester] = useState('4');
-  const [subject, setSubject] = useState('Database Systems');
+  const [subject, setSubject] = useState('');
   const [difficulty, setDifficulty] = useState('intermediate');
 
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [detailedDescription, setDetailedDescription] = useState('');
   const [category, setCategory] = useState('Database Management Systems');
-  const [technologies, setTechnologies] = useState('MySQL, C#, .NET');
+  const [technologies, setTechnologies] = useState('');
+  const [featuresList, setFeaturesList] = useState([]);
+  const [additionalPackageIncludes, setAdditionalPackageIncludes] = useState([]);
 
   // Deliverables
-  const [hasSourceCode, setHasSourceCode] = useState(true);
-  const [hasDatabaseDump, setHasDatabaseDump] = useState(true);
-  const [hasSRS, setHasSRS] = useState(true);
-  const [hasDiagrams, setHasDiagrams] = useState(true);
-  const [hasSlides, setHasSlides] = useState(true);
+  const [hasSourceCode, setHasSourceCode] = useState(false);
+  const [hasDatabaseDump, setHasDatabaseDump] = useState(false);
+  const [hasSRS, setHasSRS] = useState(false);
+  const [hasDiagrams, setHasDiagrams] = useState(false);
+  const [hasSlides, setHasSlides] = useState(false);
 
   // Setup Guide
-  const [installationGuide, setInstallationGuide] = useState('1. Clone/extract archive. 2. Import database.sql into MySQL. 3. Configure connection string. 4. Launch project.');
-  const [prerequisites, setPrerequisites] = useState('Visual Studio 2022, MySQL 8.0, Modern Browser');
+  const [installationGuide, setInstallationGuide] = useState('');
+  const [prerequisites, setPrerequisites] = useState('');
 
   // Pricing & Media
-  const [pricePKR, setPricePKR] = useState('2500');
-  const [screenshotUrl, setScreenshotUrl] = useState('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800');
+  const [pricePKR, setPricePKR] = useState('');
+  const [screenshotUrl, setScreenshotUrl] = useState('');
+  const [screenshotFile, setScreenshotFile] = useState(null);
+  const [imageInputType, setImageInputType] = useState('url');
   const [demoVideoUrl, setDemoVideoUrl] = useState('');
 
   const [loading, setLoading] = useState(false);
+  const [loadingProject, setLoadingProject] = useState(isEditing);
   const [error, setError] = useState('');
   const [successModal, setSuccessModal] = useState(false);
+  const [projectLoadError, setProjectLoadError] = useState('');
+
+  useEffect(() => {
+    if (!isEditing) return;
+    let active = true;
+    projectService.getAdminProject(id)
+      .then((response) => {
+        if (!active) return;
+        const project = response.data;
+        if (!project) throw new Error('Project not found.');
+        setDegree(project.degree || '');
+        setSemester(String(project.semester || ''));
+        setSubject(project.subject || '');
+        setDifficulty(project.difficulty || 'intermediate');
+        setTitle(project.title || '');
+        setSummary(project.summary || '');
+        setDetailedDescription(project.detailed_description || '');
+        setCategory(project.category || '');
+        setTechnologies((project.technologies || []).join(', '));
+        setFeaturesList(project.features_list || []);
+        const includes = project.package_includes || [];
+        const knownIncludes = [
+          'Complete Runnable Source Code (.zip)',
+          'Database SQL Schema & Sample Seed Data',
+          'Comprehensive SRS Documentation (PDF)',
+          'Normalized ER & UML Architecture Diagrams',
+          'Viva Defense Presentation Slides (PPTX)'
+        ];
+        setHasSourceCode(includes.some((item) => item.name === knownIncludes[0]));
+        setHasDatabaseDump(includes.some((item) => item.name === knownIncludes[1]));
+        setHasSRS(includes.some((item) => item.name === knownIncludes[2]));
+        setHasDiagrams(includes.some((item) => item.name === knownIncludes[3]));
+        setHasSlides(includes.some((item) => item.name === knownIncludes[4]));
+        setAdditionalPackageIncludes(includes.filter((item) => !knownIncludes.includes(item.name)));
+        setInstallationGuide(project.installation_guide || '');
+        setPrerequisites((project.system_prerequisites || []).join(', '));
+        setPricePKR(String(project.price_pkr ?? ''));
+        setScreenshotUrl(project.screenshots?.[0] || '');
+        setDemoVideoUrl(project.demo_video_url || '');
+      })
+      .catch((loadError) => {
+        if (active) setProjectLoadError(loadError.message || String(loadError));
+      })
+      .finally(() => {
+        if (active) setLoadingProject(false);
+      });
+    return () => { active = false; };
+  }, [id, isEditing]);
 
   // Dynamic available subjects
   const availableSubjects = (degree && semester && SUBJECTS_BY_DEGREE[degree]?.[semester])
     ? SUBJECTS_BY_DEGREE[degree][semester]
     : [];
+
+  if (loadingProject) {
+    return <div className="p-12 text-center text-sm text-slate-500">Loading project details...</div>;
+  }
+
+  if (projectLoadError) {
+    return (
+      <div role="alert" className="max-w-3xl mx-auto p-8 text-center text-sm text-red-700">
+        {projectLoadError}
+        <div className="mt-4"><Link to="/admin/projects" className="underline">Return to projects</Link></div>
+      </div>
+    );
+  }
 
   const handleNextStep = () => {
     setError('');
@@ -95,7 +165,7 @@ export const AddProject = () => {
 
     setLoading(true);
 
-    const packageIncludes = [];
+    const packageIncludes = [...additionalPackageIncludes];
     if (hasSourceCode) packageIncludes.push({ name: 'Complete Runnable Source Code (.zip)', ready: true });
     if (hasDatabaseDump) packageIncludes.push({ name: 'Database SQL Schema & Sample Seed Data', ready: true });
     if (hasSRS) packageIncludes.push({ name: 'Comprehensive SRS Documentation (PDF)', ready: true });
@@ -103,7 +173,25 @@ export const AddProject = () => {
     if (hasSlides) packageIncludes.push({ name: 'Viva Defense Presentation Slides (PPTX)', ready: true });
 
     try {
-      await projectService.createProject({
+      let projectImageUrl = screenshotUrl.trim();
+      if (screenshotFile) {
+        if (!isSupabaseConfigured) {
+          throw new Error('Configure Supabase before uploading a project image.');
+        }
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!user) throw new Error('Sign in again before uploading a project image.');
+        const safeName = screenshotFile.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+        const storagePath = `${user.id}/${Date.now()}-${safeName}`;
+        const { error: uploadError } = await supabase.storage
+          .from('project-images')
+          .upload(storagePath, screenshotFile, { contentType: screenshotFile.type, upsert: false });
+        if (uploadError) throw uploadError;
+        const { data } = supabase.storage.from('project-images').getPublicUrl(storagePath);
+        projectImageUrl = data.publicUrl;
+      }
+
+      const projectData = {
         title: title.trim(),
         summary: summary.trim(),
         detailed_description: detailedDescription.trim(),
@@ -114,18 +202,24 @@ export const AddProject = () => {
         difficulty,
         price_pkr: Number(pricePKR),
         technologies: technologies.split(',').map(t => t.trim()),
-        screenshots: [screenshotUrl],
+        screenshots: projectImageUrl ? [projectImageUrl] : [],
         demo_video_url: demoVideoUrl.trim() || null,
+        features_list: featuresList,
         installation_guide: installationGuide.trim(),
         system_prerequisites: prerequisites.split(',').map(p => p.trim()),
         package_includes: packageIncludes
-      });
+      };
+      if (isEditing) {
+        await projectService.updateAdminProject(id, projectData);
+      } else {
+        await projectService.createProject(projectData);
+      }
 
       setLoading(false);
       setSuccessModal(true);
     } catch (err) {
       setLoading(false);
-      setError(typeof err === 'string' ? err : 'Failed to publish project listing.');
+      setError(typeof err === 'string' ? err : err.message || (isEditing ? 'Failed to update project.' : 'Failed to publish project listing.'));
     }
   };
 
@@ -140,10 +234,12 @@ export const AddProject = () => {
             <span>Seller Studio</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            {isAdmin ? 'Add Ready-Made Project' : 'Upload Ready-Made Project Package'}
+            {isEditing ? 'Edit Ready-Made Project' : isAdmin ? 'Add Ready-Made Project' : 'Upload Ready-Made Project Package'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            {isAdmin
+            {isEditing
+              ? 'Update project details and its marketplace image.'
+              : isAdmin
               ? 'Add a project to the marketplace from the administration panel.'
               : 'Publish your completed semester project with source code, schemas, and IEEE SRS documentation.'}
           </p>
@@ -497,15 +593,56 @@ export const AddProject = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Primary Screenshot URL
+              <label className="block text-xs font-semibold text-slate-700 mb-2">
+                Project image (optional)
               </label>
-              <input
-                type="url"
-                value={screenshotUrl}
-                onChange={(e) => setScreenshotUrl(e.target.value)}
-                className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-gold"
-              />
+              <div className="flex gap-4 mb-3 text-xs">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="project-image-source"
+                    checked={imageInputType === 'url'}
+                    onChange={() => { setImageInputType('url'); setScreenshotFile(null); }}
+                  />
+                  Image URL
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="project-image-source"
+                    checked={imageInputType === 'file'}
+                    onChange={() => setImageInputType('file')}
+                  />
+                  Upload image
+                </label>
+              </div>
+              {imageInputType === 'url' ? (
+                <input
+                  type="url"
+                  value={screenshotUrl}
+                  onChange={(e) => { setScreenshotUrl(e.target.value); setScreenshotFile(null); }}
+                  placeholder="https://example.com/project-image.png"
+                  className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-gold"
+                />
+              ) : (
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    if (file && (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024)) {
+                      setError('Choose an image file no larger than 5 MB.');
+                      e.target.value = '';
+                      setScreenshotFile(null);
+                      return;
+                    }
+                    setError('');
+                    setScreenshotFile(file);
+                  }}
+                  className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-gold"
+                />
+              )}
+              {screenshotFile && <p className="mt-1 text-xs text-slate-500">{screenshotFile.name}</p>}
             </div>
 
             <div>
@@ -544,7 +681,7 @@ export const AddProject = () => {
               className="shadow-md"
               leftIcon={<UploadCloud className="w-5 h-5" />}
             >
-              {isAdmin ? 'Publish Ready-Made Project' : 'Submit for Admin Review'}
+              {isEditing ? 'Save Project Changes' : isAdmin ? 'Publish Ready-Made Project' : 'Submit for Admin Review'}
             </Button>
           )}
         </div>
@@ -560,10 +697,12 @@ export const AddProject = () => {
             </div>
             <div className="space-y-1">
               <h3 className="text-xl font-bold text-slate-900">
-                {isAdmin ? 'Project Published!' : 'Project Submitted for Review!'}
+                {isEditing ? 'Project Updated' : isAdmin ? 'Project Published!' : 'Project Submitted for Review!'}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                {isAdmin
+                {isEditing
+                  ? <>Changes to <strong>"{title}"</strong> have been saved.</>
+                  : isAdmin
                   ? <>Your listing <strong>"{title}"</strong> has been published to the marketplace.</>
                   : <>Your listing <strong>"{title}"</strong> has been queued for admin code inspection. Once verified, it will be published to the marketplace.</>}
               </p>

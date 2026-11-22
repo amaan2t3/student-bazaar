@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { 
   Star, 
   Heart, 
@@ -19,22 +19,65 @@ import {
   HelpCircle,
   MessageSquare
 } from 'lucide-react';
-import { MOCK_PROJECTS } from '../../data/mockAcademicData';
 import { useCart } from '../../context/CartContext';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import CheckoutModal from '../../components/modals/CheckoutModal';
+import projectService from '../../services/projectService';
 
 export const ProjectDetails = () => {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const { addToCart, isInCart, toggleWishlist, isInWishlist } = useCart();
-  
-  // Find project by slug
-  const project = MOCK_PROJECTS.find((p) => p.slug === slug) || MOCK_PROJECTS[0];
+  const [project, setProject] = useState(null);
+  const [projectLoading, setProjectLoading] = useState(true);
+  const [projectError, setProjectError] = useState('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'package' | 'installation' | 'reviews'
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setProjectLoading(true);
+    setProjectError('');
+    projectService.getProjectBySlug(slug)
+      .then((response) => {
+        if (active) {
+          setProject(response.data);
+          setActiveImageIndex(0);
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setProject(null);
+          setProjectError(typeof error === 'string' ? error : 'Failed to load project details.');
+        }
+      })
+      .finally(() => {
+        if (active) setProjectLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  if (projectLoading) {
+    return <p className="py-16 text-center text-sm text-slate-500">Loading project details...</p>;
+  }
+
+  if (projectError || !project) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <h1 className="text-xl font-bold text-slate-900">Project unavailable</h1>
+        <p role="alert" className="mt-2 text-sm text-slate-600">
+          {projectError || 'This project could not be found.'}
+        </p>
+        <Link to="/browse" className="mt-5 inline-block text-sm font-semibold text-navy-mid hover:underline">
+          Browse available projects
+        </Link>
+      </div>
+    );
+  }
 
   const wishlisted = isInWishlist(project.id);
   const inCart = isInCart(project.id);
@@ -86,44 +129,50 @@ export const ProjectDetails = () => {
               <div className="flex items-center gap-1 text-amber-600 font-bold">
                 <Star className="w-4 h-4 fill-current" />
                 <span>{project.rating.toFixed(1)}</span>
-                <span className="text-slate-400 font-normal">({project.reviewsCount} verified student reviews)</span>
+                <span className="text-slate-400 font-normal">({project.reviewsCount} ratings)</span>
               </div>
               <span>&bull;</span>
               <span>Total Sales: <strong>{project.seller.salesCount} packages</strong></span>
-              <span>&bull;</span>
-              <span>Tested on <strong>Windows, macOS, Linux</strong></span>
             </div>
           </div>
 
           {/* Screenshots Gallery */}
           <div className="space-y-3">
-            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-sm relative group">
-              <img
-                src={project.screenshots[activeImageIndex]}
-                alt={project.title}
-                className="w-full h-full object-cover transition-all"
-              />
-              <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-md font-medium">
-                Screenshot {activeImageIndex + 1} of {project.screenshots.length}
+            {project.screenshots.length > 0 ? (
+              <>
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-sm relative group">
+                  <img
+                    src={project.screenshots[activeImageIndex]}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-all"
+                  />
+                  <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-md font-medium">
+                    Screenshot {activeImageIndex + 1} of {project.screenshots.length}
+                  </div>
+                </div>
+                {project.screenshots.length > 1 && (
+                  <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                    {project.screenshots.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveImageIndex(idx)}
+                        className={`w-20 sm:w-24 aspect-video rounded-lg overflow-hidden border-2 shrink-0 transition-all ${
+                          activeImageIndex === idx
+                            ? 'border-gold shadow-sm ring-2 ring-gold-soft/30 scale-105'
+                            : 'border-slate-200 opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={img} alt={`${project.title} screenshot ${idx + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="aspect-video w-full rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center text-sm text-slate-500">
+                No project image provided.
               </div>
-            </div>
-
-            {/* Thumbnail Strip */}
-            <div className="flex items-center gap-3 overflow-x-auto pb-1">
-              {project.screenshots.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`w-20 sm:w-24 aspect-video rounded-lg overflow-hidden border-2 shrink-0 transition-all ${
-                    activeImageIndex === idx 
-                      ? 'border-gold shadow-sm ring-2 ring-gold-soft/30 scale-105' 
-                      : 'border-slate-200 opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <img src={img} alt="thumb" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+            )}
           </div>
 
           {/* Tabbed Content Navigation */}
@@ -262,31 +311,10 @@ export const ProjectDetails = () => {
                       <span className="text-xl font-bold text-slate-900">{project.rating.toFixed(1)}</span>
                       <span className="text-xs text-slate-500 ml-1">out of 5 stars</span>
                     </div>
-                    <span className="text-xs text-slate-500 font-medium">100% Verified University Purchases</span>
                   </div>
-
-                  {/* Sample Reviews */}
-                  <div className="space-y-4">
-                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-900">Hamza Tariq (FAST Lahore)</span>
-                        <div className="flex text-amber-500"><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /></div>
-                      </div>
-                      <p className="text-xs text-slate-600">
-                        "The database normalization proofs and ER diagrams alone saved me 15 hours of work. The code compiled immediately in Visual Studio with zero errors. A+ project!"
-                      </p>
-                    </div>
-
-                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-900">Sara Nazeer (COMSATS Islamabad)</span>
-                        <div className="flex text-amber-500"><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /><Star className="w-3.5 h-3.5 fill-current" /></div>
-                      </div>
-                      <p className="text-xs text-slate-600">
-                        "Clean modular code structure and the viva preparation slide deck gave me total confidence during my semester evaluation."
-                      </p>
-                    </div>
-                  </div>
+                  {project.reviewsCount === 0 && (
+                    <p className="text-sm text-slate-500">No reviews yet.</p>
+                  )}
                 </div>
               )}
 

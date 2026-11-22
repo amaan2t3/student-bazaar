@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Heart, FileText, CheckCircle2, ShoppingCart } from 'lucide-react';
+import { Star, Heart, FileText, CheckCircle2, ShoppingCart, PackageOpen } from 'lucide-react';
 import Badge from '../common/Badge';
 import { useCart } from '../../context/CartContext';
 
@@ -13,12 +13,18 @@ export const ProjectCard = ({ project }) => {
     <div className="group bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full hover:border-emerald-300">
       {/* Thumbnail with Overlay Badges */}
       <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-        <img
-          src={project.screenshots[0]}
-          alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          loading="lazy"
-        />
+        {project.screenshots[0] ? (
+          <img
+            src={project.screenshots[0]}
+            alt={project.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-slate-400" aria-label="No project image">
+            <PackageOpen className="h-10 w-10" />
+          </div>
+        )}
 
         {/* Floating Wishlist Button */}
         <button

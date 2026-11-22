@@ -1,6 +1,6 @@
 import React from 'react';
 import { Filter, X, RotateCcw, BookOpen, Layers } from 'lucide-react';
-import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE } from '../../data/mockAcademicData';
+import { DEGREES, SEMESTERS, SUBJECTS_BY_DEGREE } from '../../data/academicData';
 import Button from '../common/Button';
 
 export const AcademicFilterBar = ({

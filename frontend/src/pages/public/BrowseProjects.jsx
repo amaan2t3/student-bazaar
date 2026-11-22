@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, PackageOpen, Sparkles, CheckCircle2 } from 'lucide-react';
-import { MOCK_PROJECTS } from '../../data/mockAcademicData';
+import { Search, PackageOpen, Sparkles, AlertCircle } from 'lucide-react';
 import ProjectCard from '../../components/cards/ProjectCard';
 import AcademicFilterBar from '../../components/filters/AcademicFilterBar';
 import Button from '../../components/common/Button';
+import projectService from '../../services/projectService';
 
 export const BrowseProjects = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,6 +17,26 @@ export const BrowseProjects = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '8000');
   const [sortBy, setSortBy] = useState('popular');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  const loadProjects = async () => {
+    setLoading(true);
+    setLoadError('');
+    try {
+      const response = await projectService.getProjects();
+      setProjects(response.data || []);
+    } catch (error) {
+      setLoadError(typeof error === 'string' ? error : 'Failed to load projects.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadProjects();
+  }, []);
 
   // Sync state back to URL params
   useEffect(() => {
@@ -43,7 +63,7 @@ export const BrowseProjects = () => {
 
   // Filtered & Sorted Projects Calculation
   const filteredProjects = useMemo(() => {
-    return MOCK_PROJECTS.filter((project) => {
+    return projects.filter((project) => {
       // Degree match
       if (degree && project.degree !== degree) return false;
       // Semester match
@@ -71,7 +91,7 @@ export const BrowseProjects = () => {
       // default: popular (reviewsCount)
       return b.reviewsCount - a.reviewsCount;
     });
-  }, [degree, semester, subject, difficulty, searchQuery, maxPrice, sortBy]);
+  }, [projects, degree, semester, subject, difficulty, searchQuery, maxPrice, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -139,7 +159,17 @@ export const BrowseProjects = () => {
       </div>
 
       {/* Projects Grid or Empty State */}
-      {filteredProjects.length > 0 ? (
+      {loading ? (
+        <p className="py-12 text-center text-sm text-slate-500">Loading approved projects...</p>
+      ) : loadError ? (
+        <div role="alert" className="mx-auto my-8 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+          <AlertCircle className="mx-auto h-8 w-8 text-red-600" />
+          <p className="mt-3 text-sm text-red-700">{loadError}</p>
+          <Button variant="outline" size="sm" className="mt-4" onClick={loadProjects}>
+            Try Again
+          </Button>
+        </div>
+      ) : filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />

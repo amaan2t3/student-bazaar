@@ -11,7 +11,9 @@ import {
   FileCode2, 
   Database, 
   FileText,
-  DollarSign
+  DollarSign,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import projectService from '../../services/projectService';
 import Button from '../../components/common/Button';
@@ -54,6 +56,19 @@ export const ProjectModeration = () => {
       fetchModerationQueue();
     } catch (err) {
       setActionError(typeof err === 'string' ? err : 'Failed to moderate project.');
+    }
+  };
+
+  const handleDeleteProject = async (project) => {
+    if (!window.confirm(`Delete "${project.title}"? This cannot be undone.`)) return;
+    setActionSuccess('');
+    setActionError('');
+    try {
+      const result = await projectService.deleteAdminProject(project.id);
+      setActionSuccess(result.message || 'Project deleted.');
+      fetchModerationQueue();
+    } catch (err) {
+      setActionError(typeof err === 'string' ? err : 'Failed to delete project.');
     }
   };
 
@@ -178,7 +193,12 @@ export const ProjectModeration = () => {
                   <span className="text-slate-400">&bull;</span>
                   <span>Listed Price: <strong className="text-slate-900">Rs. {Number(proj.price_pkr).toLocaleString()} PKR</strong></span>
                   <span className="text-slate-400">&bull;</span>
-                  <span>Seller: <strong>{proj.seller?.name || proj.seller?.full_name || 'Muhammad Usman'}</strong> ({proj.seller?.university || 'FAST-NUCES'})</span>
+                  {(proj.seller?.name || proj.seller?.full_name || proj.seller?.university) && (
+                    <span>
+                      Seller: <strong>{proj.seller?.name || proj.seller?.full_name || 'Name unavailable'}</strong>
+                      {proj.seller?.university ? ` (${proj.seller.university})` : ''}
+                    </span>
+                  )}
                 </div>
 
                 <p className="text-xs text-slate-600 leading-relaxed max-w-3xl">
@@ -213,6 +233,20 @@ export const ProjectModeration = () => {
                     View Project Details
                   </Button>
                 </Link>
+                <Link to={`/admin/projects/${proj.id}/edit`} className="w-full sm:w-auto">
+                  <Button size="sm" variant="outline" className="w-full text-xs" leftIcon={<Pencil className="w-3 h-3" />}>
+                    Edit Project
+                  </Button>
+                </Link>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="w-full sm:w-auto text-xs"
+                  onClick={() => handleDeleteProject(proj)}
+                  leftIcon={<Trash2 className="w-3 h-3" />}
+                >
+                  Delete Project
+                </Button>
 
                 {proj.status === 'pending' ? (
                   <>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Code2, 
@@ -17,14 +17,38 @@ import {
   TrendingUp,
   Award
 } from 'lucide-react';
-import { DEGREES, MOCK_PROJECTS, CATEGORIES } from '../../data/mockAcademicData';
+import { DEGREES } from '../../data/academicData';
 import ProjectCard from '../../components/cards/ProjectCard';
 import Button from '../../components/common/Button';
+import projectService from '../../services/projectService';
 
 export const Home = () => {
   const [quickDegree, setQuickDegree] = useState('BSCS');
   const [quickSemester, setQuickSemester] = useState('3');
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+    projectService.getProjects()
+      .then((response) => {
+        if (active) setFeaturedProjects(response.data || []);
+      })
+      .catch((error) => {
+        if (active) {
+          setProjectsError(typeof error === 'string' ? error : 'Failed to load featured projects.');
+        }
+      })
+      .finally(() => {
+        if (active) setProjectsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleQuickSearch = (e) => {
     e.preventDefault();
@@ -175,15 +199,24 @@ export const Home = () => {
             </h2>
           </div>
           <Link to="/browse" className="text-sm font-semibold text-gold hover:text-navy-mid flex items-center gap-1">
-            View All {MOCK_PROJECTS.length * 15}+ Projects &rarr;
+            Browse All Approved Projects &rarr;
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_PROJECTS.slice(0, 6).map((project) => (
+          {featuredProjects.slice(0, 6).map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
+        {projectsLoading && (
+          <p className="mt-6 text-center text-sm text-slate-500">Loading approved projects...</p>
+        )}
+        {!projectsLoading && projectsError && (
+          <p role="alert" className="mt-6 text-center text-sm text-red-600">{projectsError}</p>
+        )}
+        {!projectsLoading && !projectsError && featuredProjects.length === 0 && (
+          <p className="mt-6 text-center text-sm text-slate-500">No approved projects are available yet.</p>
+        )}
       </section>
 
       {/* 4. THE DUAL-SERVICE PIPELINE EXPLAINER */}
