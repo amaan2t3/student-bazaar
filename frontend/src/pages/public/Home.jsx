@@ -65,8 +65,7 @@ export const Home = () => {
             
             {/* Tagline Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-soft/30 text-navy text-xs font-semibold tracking-wide border border-gold-soft">
-              <Sparkles className="w-3.5 h-3.5 text-gold" />
-              <span>Pakistan's Dedicated University CS/IT Project Hub</span>
+               <span>Pakistan's Dedicated University CS/IT Project Hub</span>
             </div>
 
             {/* Main Headline */}
@@ -79,7 +78,7 @@ export const Home = () => {
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-              Access verified semester projects with runnable source code, complete IEEE documentation, and 3NF database schemas — or commission custom assignments from vetted student developers.
+              Access verified semester projects with runnable source code, complete PPT documentation, and 3NF database schemas — or commission custom assignments from vetted student developers.
             </p>
 
             {/* Quick Academic Curricula Search Form */}
@@ -88,8 +87,7 @@ export const Home = () => {
               className="mt-8 p-3 bg-white rounded-2xl shadow-xl shadow-emerald-900/5 border border-slate-200 max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-2"
             >
               <div className="flex-1 w-full flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200">
-                <GraduationCap className="w-4 h-4 text-gold shrink-0" />
-                <select
+                 <select
                   value={quickDegree}
                   onChange={(e) => setQuickDegree(e.target.value)}
                   className="bg-transparent text-xs sm:text-sm font-medium text-slate-800 w-full focus:outline-none"
@@ -103,8 +101,7 @@ export const Home = () => {
               </div>
 
               <div className="flex-1 w-full flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200">
-                <Layers className="w-4 h-4 text-gold shrink-0" />
-                <select
+                 <select
                   value={quickSemester}
                   onChange={(e) => setQuickSemester(e.target.value)}
                   className="bg-transparent text-xs sm:text-sm font-medium text-slate-800 w-full focus:outline-none"
@@ -118,23 +115,19 @@ export const Home = () => {
               </div>
 
               <Button type="submit" size="md" className="w-full sm:w-auto shrink-0 shadow-md">
-                <Search className="w-4 h-4 mr-1.5" />
-                Find Projects
+                 Find Projects
               </Button>
             </form>
 
             {/* Trust points */}
             <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-medium">
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-gold" />
                 100% Tested Source Code
               </span>
               <span className="flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-gold" />
-                SRS & UML Diagrams Included
+                PPT  & UML Diagrams Included
               </span>
               <span className="flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-gold" />
                 PKR Escrow Protection
               </span>
             </div>
@@ -240,8 +233,7 @@ export const Home = () => {
             <div className="bg-slate-800/80 rounded-2xl p-6 sm:p-8 border border-slate-700 relative overflow-hidden flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="inline-flex p-3 rounded-xl bg-gold/10 text-gold-soft border border-gold/20">
-                  <Laptop className="w-6 h-6" />
-                </div>
+                 </div>
                 <h3 className="text-xl font-bold text-white">1. Ready-Made Project Vault</h3>
                 <p className="text-slate-300 text-sm leading-relaxed">
                   Browse verified projects built by top students from FAST, NUST, and PUCIT. Filter by your exact degree, semester, and course.
@@ -275,8 +267,7 @@ export const Home = () => {
             <div className="bg-slate-800/80 rounded-2xl p-6 sm:p-8 border border-slate-700 relative overflow-hidden flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="inline-flex p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                  <Sparkles className="w-6 h-6" />
-                </div>
+                 </div>
                 <h3 className="text-xl font-bold text-white">2. Custom Assignment Requests</h3>
                 <p className="text-slate-300 text-sm leading-relaxed">
                   Have an assignment with unique constraints? Upload your professor's rubric PDF and receive competitive proposals from approved student developers.

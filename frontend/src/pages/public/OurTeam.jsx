@@ -48,8 +48,7 @@ export const OurTeam = () => {
         {/* ── Page Header ── */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#101827] text-[#D6B779] text-xs font-semibold tracking-wide uppercase">
-            <Users className="w-3.5 h-3.5" />
-            Leadership &amp; Engineering
+             Leadership &amp; Engineering
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
             Meet the Team Powering <span className="text-[#101827]">student</span><span className="text-[#D6B779]">Bazaar</span>
@@ -166,8 +165,7 @@ export const OurTeam = () => {
         <div className="bg-[#101827] text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
           <div className="space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-[#D6B779]/10 text-[#D6B779] flex items-center justify-center mx-auto md:mx-0">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
+             </div>
             <h4 className="text-lg font-bold text-white">Strict Academic Rigor</h4>
             <p className="text-xs sm:text-sm text-slate-400">
               Every project is screened against university guidelines, plagiarism ethics, and architectural standards.
@@ -176,8 +174,7 @@ export const OurTeam = () => {
 
           <div className="space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-[#D6B779]/10 text-[#D6B779] flex items-center justify-center mx-auto md:mx-0">
-              <Sparkles className="w-6 h-6" />
-            </div>
+             </div>
             <h4 className="text-lg font-bold text-white">Empowering Student Sellers</h4>
             <p className="text-xs sm:text-sm text-slate-400">
               Top students can monetize verified lab work, final year projects, and semester coursework through local PKR payouts.
@@ -186,8 +183,7 @@ export const OurTeam = () => {
 
           <div className="space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-[#D6B779]/10 text-[#D6B779] flex items-center justify-center mx-auto md:mx-0">
-              <Users className="w-6 h-6" />
-            </div>
+             </div>
             <h4 className="text-lg font-bold text-white">Campus Ambassador Program</h4>
             <p className="text-xs sm:text-sm text-slate-400">
               Represent studentBazaar at FAST, NUST, PUCIT, COMSATS, UET, and GIKI to earn stipends and developer perks.

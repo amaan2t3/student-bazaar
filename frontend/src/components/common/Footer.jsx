@@ -1,25 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
-import logo from '../../assets/logo1.jpeg';
+import logo from '../../assets/Logo.jpeg';
 
 export const Footer = () => {
   return (
     <footer className="bg-[#101827] text-slate-400 text-sm border-t border-[#1B2940]">
-      {/* Academic Integrity Banner */}
-      <div className="bg-[#1B2940] border-b border-[#D6B779]/20 py-4 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#E9D9B5]">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-[#D6B779] shrink-0" />
-            <span>
-              <strong>Academic Integrity Notice:</strong> All digital assets on studentBazaar are designed as architectural references, study frameworks, and learning solutions.
-            </span>
-          </div>
-          <Link to="/academic-integrity" className="underline hover:text-white font-medium shrink-0">
-            Read Permitted Educational Use Policy &rarr;
-          </Link>
-        </div>
-      </div>
+     
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">

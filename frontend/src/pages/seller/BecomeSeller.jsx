@@ -104,37 +104,36 @@ export const BecomeSeller = () => {
     }
   };
 
-  // If already approved as a seller
-  if (role === 'seller') {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 rounded-2xl bg-gold-soft/30 text-navy-mid flex items-center justify-center mx-auto shadow-md">
-          <CheckCircle2 className="w-10 h-10" />
-        </div>
-        <div className="space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-navy-mid bg-ivory px-3 py-1 rounded-full border border-gold-soft">
-            Verified Creator Status
-          </span>
-          <h1 className="text-3xl font-extrabold text-slate-900">You Are an Approved Seller!</h1>
-          <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-            Your student developer credentials have been verified. You can now upload ready-made semester project packages and bid on custom student assignment briefs.
-          </p>
-        </div>
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link to="/custom-request">
-            <Button variant="primary" size="md">
-              Browse Custom Assignment Requests
-            </Button>
-          </Link>
-          <Link to="/browse">
-            <Button variant="outline" size="md">
-              View Marketplace Catalog
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // // If already approved as a seller
+  // if (role === 'seller') {
+  //   return (
+  //     <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
+  //       <div className="w-16 h-16 rounded-2xl bg-gold-soft/30 text-navy-mid flex items-center justify-center mx-auto shadow-md">
+  //        </div>
+  //       <div className="space-y-2">
+  //         <span className="text-xs font-bold uppercase tracking-wider text-navy-mid bg-ivory px-3 py-1 rounded-full border border-gold-soft">
+  //           Verified Creator Status
+  //         </span>
+  //         <h1 className="text-3xl font-extrabold text-slate-900">You Are an Approved Seller!</h1>
+  //         <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+  //           Your student developer credentials have been verified. You can now upload ready-made semester project packages and bid on custom student assignment briefs.
+  //         </p>
+  //       </div>
+  //       <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+  //         <Link to="/custom-request">
+  //           <Button variant="primary" size="md">
+  //             Browse Custom Assignment Requests
+  //           </Button>
+  //         </Link>
+  //         <Link to="/browse">
+  //           <Button variant="outline" size="md">
+  //             View Marketplace Catalog
+  //           </Button>
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -142,8 +141,7 @@ export const BecomeSeller = () => {
       {/* Header Banner */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-soft/30 text-navy text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span>Earn in PKR from Your University Projects</span>
+           <span>Earn in PKR from Your University Projects</span>
         </div>
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
           Apply to Become an Approved Seller
@@ -192,8 +190,7 @@ export const BecomeSeller = () => {
           {/* Section 1: Academic Identity */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-gold" />
-              <span>1. Academic Verification</span>
+               <span>1. Academic Verification</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700">
@@ -215,8 +212,7 @@ export const BecomeSeller = () => {
           {/* Section 2: Code Portfolio & GitHub */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-gold" />
-              <span>2. Code Profiles & Links</span>
+               <span>2. Code Profiles & Links</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -233,8 +229,7 @@ export const BecomeSeller = () => {
                     className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                     required
                   />
-                  <Github className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                </div>
+                 </div>
               </div>
 
               <div>
@@ -249,8 +244,7 @@ export const BecomeSeller = () => {
                     placeholder="https://yourportfolio.dev"
                     className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                   />
-                  <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                </div>
+                 </div>
               </div>
             </div>
           </div>
@@ -335,8 +329,7 @@ export const BecomeSeller = () => {
               size="lg"
               isLoading={loading}
               className="w-full shadow-md"
-              leftIcon={<ShieldCheck className="w-5 h-5" />}
-            >
+             >
               Submit Seller Application
             </Button>
           </div>

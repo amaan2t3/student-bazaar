@@ -230,8 +230,7 @@ export const AddProject = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-soft/30 text-navy text-xs font-semibold mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            <span>Seller Studio</span>
+             <span>Seller Studio</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             {isEditing ? 'Edit Ready-Made Project' : isAdmin ? 'Add Ready-Made Project' : 'Upload Ready-Made Project Package'}
@@ -273,8 +272,7 @@ export const AddProject = () => {
 
       {error && (
         <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
+           <span>{error}</span>
         </div>
       )}
 

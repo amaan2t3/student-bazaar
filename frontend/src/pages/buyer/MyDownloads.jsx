@@ -105,8 +105,7 @@ export const MyDownloads = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-soft/30 text-navy text-xs font-semibold mb-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-gold" />
-            <span>Digital Assets Vault</span>
+             <span>Digital Assets Vault</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             My Purchased Project Downloads
@@ -120,21 +119,10 @@ export const MyDownloads = () => {
 
       {error && (
         <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
+           <span>{error}</span>
         </div>
       )}
 
-      {/* Security Info Card */}
-      <div className="bg-navy-dark text-gold-soft p-4 rounded-xl border border-navy-mid flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <ShieldCheck className="w-5 h-5 text-gold-soft shrink-0" />
-          <span>
-            <strong>Anti-Piracy Security Vault:</strong> Download tokens expire in 15 minutes. You can regenerate a new token at any time with perpetual access.
-          </span>
-        </div>
-        <span className="font-mono text-gold-soft shrink-0">TLS 1.3 &bull; SHA-256 HMAC</span>
-      </div>
 
       {/* Purchases List */}
       {loading ? (

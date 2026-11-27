@@ -112,8 +112,7 @@ export const CustomProjectRequest = () => {
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-soft/30 text-navy text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span>University Assignment & Project Bidding</span>
+           <span>University Assignment & Project Bidding</span>
         </div>
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
           Request a Custom Academic Project
@@ -417,8 +416,7 @@ export const CustomProjectRequest = () => {
               size="lg"
               isLoading={submitting}
               className="w-full shadow-md"
-              leftIcon={<Sparkles className="w-5 h-5" />}
-            >
+             >
               Post Request for Bidding
             </Button>
           </div>

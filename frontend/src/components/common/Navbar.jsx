@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import logo from '../../assets/logo-icon.jpeg';
+import logo from '../../assets/Logo-Icon.png';
 import {
   Search,
   ShoppingCart,
@@ -93,10 +93,10 @@ export const Navbar = () => {
             <div className="flex items-center gap-2.5 truncate">
               <span className="inline-block w-2 h-2 rounded-full bg-[#D6B779] shrink-0 animate-pulse" />
               <span className="font-bold text-[#D6B779] tracking-wide uppercase text-[10px] sm:text-xs">
-                Official University Hub:
+                Official Provided
               </span>
               <span className="text-slate-300 truncate hidden sm:inline">
-                FAST-NUCES &bull; NUST &bull; PUCIT &bull; COMSATS &bull; UET &bull; GIKI &bull; NED
+                Semester Project &bull; Subject Notes &bull; FYP &bull; Project Docs 
               </span>
             </div>
           )}
@@ -195,34 +195,29 @@ export const Navbar = () => {
             ) : (
               <>
                 <NavLink to="/browse" className={publicNavLinkClasses}>
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Browse Projects</span>
+                   <span>Browse Projects</span>
                 </NavLink>
 
                 <NavLink to="/custom-request" className={publicNavLinkClasses}>
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Custom Request</span>
+                   <span>Custom Request</span>
                 </NavLink>
 
                 {role === 'seller' ? (
                   <>
                     <NavLink to="/seller/my-projects" className={publicNavLinkClasses}>
-                      <FolderCheck className="w-3.5 h-3.5" />
-                      <span>My Projects</span>
+                       <span>My Projects</span>
                     </NavLink>
                     <NavLink
                       to="/seller/add-project"
                       className="px-3 py-1.5 text-xs font-bold rounded-full bg-[#D6B779] hover:bg-[#B8933A] text-[#101827] shadow-xs transition-colors flex items-center gap-1 ml-1"
                     >
-                      <PlusCircle className="w-3.5 h-3.5" />
-                      <span>Upload Project</span>
+                       <span>Upload Project</span>
                     </NavLink>
                   </>
                 ) : (
                   <>
                     <NavLink to="/my-downloads" className={publicNavLinkClasses}>
-                      <DownloadCloud className="w-3.5 h-3.5" />
-                      <span>My Downloads</span>
+                       <span>My Downloads</span>
                     </NavLink>
                     <NavLink
                       to="/become-seller"
@@ -234,18 +229,15 @@ export const Navbar = () => {
                 )}
 
                 <NavLink to="/how-it-works" className={publicNavLinkClasses}>
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  <span>How It Works</span>
+                   <span>How It Works</span>
                 </NavLink>
 
                 <NavLink to="/team" className={publicNavLinkClasses}>
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Our Team</span>
+                   <span>Our Team</span>
                 </NavLink>
 
                 <NavLink to="/contact" className={publicNavLinkClasses}>
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Contact</span>
+                   <span>Contact</span>
                 </NavLink>
               </>
             )}
@@ -310,31 +302,25 @@ export const Navbar = () => {
                       {role === 'admin' ? (
                         <>
                           <Link to="/admin/dashboard" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <ShieldCheck className="w-4 h-4 text-slate-400" />
-                            <span>Control Panel</span>
+                             <span>Control Panel</span>
                           </Link>
                           <Link to="/admin/contact-messages" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <MessageSquare className="w-4 h-4 text-slate-400" />
-                            <span>Inquiries Inbox</span>
+                             <span>Inquiries Inbox</span>
                           </Link>
                           <Link to="/admin/team" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <Users className="w-4 h-4 text-slate-400" />
-                            <span>Manage Our Team</span>
+                             <span>Manage Our Team</span>
                           </Link>
                           <Link to="/admin/contact-settings" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <Settings className="w-4 h-4 text-slate-400" />
-                            <span>Contact Settings</span>
+                             <span>Contact Settings</span>
                           </Link>
                         </>
                       ) : (
                         <>
                           <Link to="/my-downloads" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <DownloadCloud className="w-4 h-4 text-slate-400" />
-                            <span>My Downloads</span>
+                             <span>My Downloads</span>
                           </Link>
                           <Link to="/custom-request" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                            <Sparkles className="w-4 h-4 text-amber-500" />
-                            <span>Custom Project Requests</span>
+                             <span>Custom Project Requests</span>
                           </Link>
                         </>
                       )}

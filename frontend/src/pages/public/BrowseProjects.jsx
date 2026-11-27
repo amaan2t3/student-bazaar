@@ -106,18 +106,6 @@ export const BrowseProjects = () => {
             Discover verified semester projects tailored for Pakistani CS, IT, and SE syllabi.
           </p>
         </div>
-
-        {/* Search input in header */}
-        <div className="w-full md:w-80 relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search titles, tech, frameworks..."
-            className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold-soft/30 shadow-sm"
-          />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-        </div>
       </div>
 
       {/* University Curricula Filter Bar Component */}
@@ -192,7 +180,7 @@ export const BrowseProjects = () => {
               Reset All Filters
             </Button>
             <Link to="/custom-request">
-              <Button variant="primary" size="sm" leftIcon={<Sparkles className="w-4 h-4" />}>
+              <Button variant="primary" size="sm"  >
                 Post Custom Assignment Request
               </Button>
             </Link>

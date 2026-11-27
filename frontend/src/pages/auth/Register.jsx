@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { DEGREES } from '../../data/academicData';
 import Button from '../../components/common/Button';
 import UniversitySelect from '../../components/common/UniversitySelect';
+import  image  from '../../../src/assets/Logo-Icon.png';
 
 export const Register = () => {
   const [fullName, setFullName] = useState('');
@@ -71,9 +72,9 @@ export const Register = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-gold text-white flex items-center justify-center mx-auto shadow-md shadow-emerald-600/20">
-            <Code2 className="w-7 h-7" />
-          </div>
+          <div className="w-16     h-14 rounded-xl  flex items-center justify-center mx-auto shadow-md shadow-emerald-600/20">
+           <img src={image} alt="Logo" />
+           </div>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
             Create Student Account
           </h2>
@@ -85,16 +86,14 @@ export const Register = () => {
         {/* Success Alert */}
         {successMessage && (
           <div className="p-3 bg-ivory border border-gold-soft rounded-xl text-xs text-navy flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-gold" />
-            <span>{successMessage}</span>
+             <span>{successMessage}</span>
           </div>
         )}
 
         {/* Error Alert */}
         {(localError || authError) && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{localError || authError}</span>
+             <span>{localError || authError}</span>
           </div>
         )}
 
@@ -115,8 +114,7 @@ export const Register = () => {
                 className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                 required
               />
-              <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
+             </div>
           </div>
 
           {/* Email */}
@@ -133,8 +131,7 @@ export const Register = () => {
                 className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                 required
               />
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
+             </div>
           </div>
 
           {/* Password */}
@@ -151,8 +148,7 @@ export const Register = () => {
                 className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                 required
               />
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
+             </div>
           </div>
 
           {/* University Dropdown */}
@@ -185,8 +181,7 @@ export const Register = () => {
                     <option key={deg.id} value={deg.id}>{deg.id}</option>
                   ))}
                 </select>
-                <GraduationCap className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-              </div>
+               </div>
             </div>
 
             <div>
@@ -203,8 +198,7 @@ export const Register = () => {
                     <option key={sem} value={sem}>Semester {sem}</option>
                   ))}
                 </select>
-                <Layers className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-              </div>
+               </div>
             </div>
           </div>
 
@@ -220,7 +214,7 @@ export const Register = () => {
               Create Account
             </Button>
           </div>
-        </form>
+        </form> 
 
         {/* Login Link */}
         <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">

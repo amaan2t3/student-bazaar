@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Code2, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
+import  image  from '../../../src/assets/Logo-Icon.png';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -82,8 +83,8 @@ export const Login = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-gold text-white flex items-center justify-center mx-auto shadow-md shadow-emerald-600/20">
-            <Code2 className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-xl  flex items-center justify-center mx-auto shadow-md shadow-emerald-600/20">
+           <img src={image} alt="Logo" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
             Sign in to student<span className="text-gold">Bazaar</span>
@@ -153,8 +154,7 @@ export const Login = () => {
                 className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                 required
               />
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
+             </div>
           </div>
 
           <div>
@@ -175,8 +175,7 @@ export const Login = () => {
                 className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-800 focus:outline-none focus:border-gold focus:bg-white"
                 required
               />
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
+             </div>
           </div>
 
           <Button
