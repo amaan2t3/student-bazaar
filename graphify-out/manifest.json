@@ -144,15 +144,15 @@
     "semantic_hash": ""
   },
   "frontend/src/components/common/Footer.jsx": {
-    "mtime": 1795339626.7634614,
-    "seen": 1795339668.4400833,
-    "ast_hash": "b705d960adde3308f8a8147e291c4e65",
+    "mtime": 1795807824.7006807,
+    "seen": 1795808209.2587538,
+    "ast_hash": "27d31d0611a280fde141bae25eb9a765",
     "semantic_hash": ""
   },
   "frontend/src/components/common/Navbar.jsx": {
-    "mtime": 1795340810.0769732,
-    "seen": 1795340892.6119578,
-    "ast_hash": "e3780c3b9787b862bf07f58e384b2a63",
+    "mtime": 1795807797.9254954,
+    "seen": 1795808209.2587583,
+    "ast_hash": "8dfae857ce84eab3f56ffefc66817965",
     "semantic_hash": ""
   },
   "frontend/src/components/common/UniversitySelect.jsx": {
@@ -192,9 +192,9 @@
     "semantic_hash": ""
   },
   "frontend/src/main.jsx": {
-    "mtime": 1795199935.92555,
-    "seen": 1795338638.1349566,
-    "ast_hash": "54a301507dcdfccf4e5565754374b5dc",
+    "mtime": 1795801333.7741354,
+    "seen": 1795808209.2594118,
+    "ast_hash": "ebec1d25371fbf08bfb0852adc556f1c",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminDashboard.jsx": {
@@ -228,21 +228,21 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/auth/Login.jsx": {
-    "mtime": 1795264250.2853394,
-    "seen": 1795338638.1349702,
-    "ast_hash": "428eac6ad8296472858f1adc57d4f8a3",
+    "mtime": 1795807886.410425,
+    "seen": 1795808209.2601798,
+    "ast_hash": "f616068b5bb9dbbf0a91800061d4e6d4",
     "semantic_hash": ""
   },
   "frontend/src/pages/auth/Register.jsx": {
-    "mtime": 1795357488.8700547,
-    "seen": 1795521223.7081168,
-    "ast_hash": "50e77c2c58bf4b61baee2f98be523dbc",
+    "mtime": 1795802366.6190639,
+    "seen": 1795808209.2601838,
+    "ast_hash": "2f786ad1642c956d7c96c9ad246ccf1c",
     "semantic_hash": ""
   },
   "frontend/src/pages/buyer/MyDownloads.jsx": {
-    "mtime": 1795263831.3640573,
-    "seen": 1795338638.1349745,
-    "ast_hash": "be1b517a38a8b29ac9fae69120b0bb52",
+    "mtime": 1795807948.451467,
+    "seen": 1795808209.2601876,
+    "ast_hash": "fd1fbf118af41ad3bd343d441d69ab3c",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/AcademicIntegrity.jsx": {
@@ -252,21 +252,21 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/public/BrowseProjects.jsx": {
-    "mtime": 1795355852.031869,
-    "seen": 1795356795.239004,
-    "ast_hash": "9af234bd6c54804c237ca5b4065f645a",
+    "mtime": 1795807930.2739015,
+    "seen": 1795808209.2602854,
+    "ast_hash": "dbf69b390a6285f711ecfe528918fcdb",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/CustomProjectRequest.jsx": {
-    "mtime": 1795357488.8339155,
-    "seen": 1795521223.7082922,
-    "ast_hash": "db7d84198ad83bfd71f75e6ad52c1928",
+    "mtime": 1795807919.150403,
+    "seen": 1795808209.2602918,
+    "ast_hash": "97130da7c846c8a7a2353f418244c5aa",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/Home.jsx": {
-    "mtime": 1795357488.8070621,
-    "seen": 1795521223.7082942,
-    "ast_hash": "603c3ac8eed3bc97b838cab4e6286742",
+    "mtime": 1795798260.915495,
+    "seen": 1795808209.260295,
+    "ast_hash": "940c617be0ad72fc18fd15064ecce6e1",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/HowItWorks.jsx": {
@@ -276,27 +276,27 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/public/NotFound.jsx": {
-    "mtime": 1795199935.9808962,
-    "seen": 1795338638.1349926,
+    "mtime": 1795807872.3030963,
+    "seen": 1795808209.2604053,
     "ast_hash": "acbcbf2379b439dbdce97e756b35c225",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/ProjectDetails.jsx": {
-    "mtime": 1795363229.9493074,
-    "seen": 1795521223.708464,
-    "ast_hash": "2015da1a6dd5a5f6d1d7f68c678b26ea",
+    "mtime": 1795807878.4179325,
+    "seen": 1795808209.260412,
+    "ast_hash": "4dd8fed8e57a722818c0cc5ce85401f4",
     "semantic_hash": ""
   },
   "frontend/src/pages/seller/AddProject.jsx": {
-    "mtime": 1795364273.3788478,
-    "seen": 1795521223.7084663,
-    "ast_hash": "cf4108083703d7c0f5520138654d1463",
+    "mtime": 1795807960.4662867,
+    "seen": 1795808209.2604148,
+    "ast_hash": "acc2d5cf3f52521d6d070accad121ca9",
     "semantic_hash": ""
   },
   "frontend/src/pages/seller/BecomeSeller.jsx": {
-    "mtime": 1795263831.325057,
-    "seen": 1795338638.1349993,
-    "ast_hash": "a7dc55090c18e2651da2b3270aedf476",
+    "mtime": 1795807902.8704495,
+    "seen": 1795808209.2604177,
+    "ast_hash": "13f49a01b3d01b401b39e59ee3dd99df",
     "semantic_hash": ""
   },
   "frontend/src/pages/seller/MyProjects.jsx": {
@@ -384,21 +384,9 @@
     "semantic_hash": ""
   },
   "frontend/index.html": {
-    "mtime": 1795254165.1685522,
-    "seen": 1795338638.1350327,
-    "ast_hash": "3ead11e055e2d60a4b7834e30b75bf96",
-    "semantic_hash": ""
-  },
-  "frontend/src/assets/logo-icon.jpeg": {
-    "mtime": 1795253600.8415942,
-    "seen": 1795338638.1350346,
-    "ast_hash": "71b33dd66433407ef6f0273e4f939e2c",
-    "semantic_hash": ""
-  },
-  "frontend/src/assets/logo1.jpeg": {
-    "mtime": 1795201178.7432325,
-    "seen": 1795338638.135037,
-    "ast_hash": "b637d4b08d9e60ad288ccb93b8a6a130",
+    "mtime": 1795802251.189787,
+    "seen": 1795808209.2617514,
+    "ast_hash": "f937a19570ac9949f089174163f717d2",
     "semantic_hash": ""
   },
   "backend/src/controllers/contactController.js": {
@@ -444,15 +432,15 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/public/Contact.jsx": {
-    "mtime": 1795339397.0996208,
-    "seen": 1795339668.441068,
-    "ast_hash": "bfb88ea55b0d238c01304f60f8105e2e",
+    "mtime": 1795807972.4912531,
+    "seen": 1795808209.2602887,
+    "ast_hash": "a71d0313df3750e3fa06797041f68ec4",
     "semantic_hash": ""
   },
   "frontend/src/pages/public/OurTeam.jsx": {
-    "mtime": 1795339421.7188573,
-    "seen": 1795339668.4412818,
-    "ast_hash": "4053ee2dac0e543c120ba7fc8bf59277",
+    "mtime": 1795808055.849024,
+    "seen": 1795808209.260409,
+    "ast_hash": "1fb49d2a4ad17c3c99e94702ead862e0",
     "semantic_hash": ""
   },
   "frontend/src/services/contactService.js": {
@@ -477,6 +465,24 @@
     "mtime": 1795357488.7230723,
     "seen": 1795521223.7077284,
     "ast_hash": "eeb212a2967381b9d16b8bec77b622eb",
+    "semantic_hash": ""
+  },
+  "frontend/public/Logo-Icon.png": {
+    "mtime": 1795802199.272043,
+    "seen": 1795808209.2617564,
+    "ast_hash": "0844aea8da85f4c9f495c6d9bf627a1d",
+    "semantic_hash": ""
+  },
+  "frontend/src/assets/Logo-Icon.png": {
+    "mtime": 1795802283.1792626,
+    "seen": 1795808209.2617605,
+    "ast_hash": "0844aea8da85f4c9f495c6d9bf627a1d",
+    "semantic_hash": ""
+  },
+  "frontend/src/assets/Logo.jpeg": {
+    "mtime": 1795802561.6391022,
+    "seen": 1795808209.261764,
+    "ast_hash": "441a89283332262b632f49f2d818421b",
     "semantic_hash": ""
   },
   "backend/package-lock.json": {
