@@ -1,77 +1,87 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldCheck, ArrowUpRight } from 'lucide-react';
 import logo from '../../assets/Logo.jpeg';
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#101827] text-slate-400 text-sm border-t border-[#1B2940]">
-     
+    <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-800">
+      
+      {/* Upper Main Footer Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2.5">
-              <img src={logo} alt="StudentBazaar" className="h-10 w-auto" />
+          {/* Brand Info (4 cols) */}
+          <div className="lg:col-span-4 space-y-4">
+            <Link to="/" className="inline-block focus:outline-none">
+              <img src={logo} alt="StudentBazaar" className="h-9 w-auto rounded border border-slate-800" />
             </Link>
-            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm">
-              Pakistan's first dedicated digital marketplace for university Computer Science and Information Technology projects. Helping students learn system architecture, run verified code, and earn from their intellectual work.
+            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
+              Pakistan's dedicated computing project repository. Providing verified source code, normalized database schemas, and IEEE-format documentation for university students and educators.
             </p>
-            <div className="pt-2 text-xs text-slate-500">
-              Transactions natively verified in <strong>Pakistani Rupees (PKR)</strong>.
+            <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>Transacted natively in Pakistani Rupees (PKR)</span>
             </div>
           </div>
 
-          {/* Computing Degrees */}
-          <div>
-            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-3">By Degree</h4>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/browse?degree=BSCS" className="hover:text-[#D6B779] transition-colors">BS Computer Science</Link></li>
-              <li><Link to="/browse?degree=BSIT" className="hover:text-[#D6B779] transition-colors">BS Information Technology</Link></li>
-              <li><Link to="/browse?degree=BSSE" className="hover:text-[#D6B779] transition-colors">BS Software Engineering</Link></li>
-              <li><Link to="/browse?degree=BSAI" className="hover:text-[#D6B779] transition-colors">BS Artificial Intelligence</Link></li>
-              <li><Link to="/browse?degree=BSDS" className="hover:text-[#D6B779] transition-colors">BS Data Science</Link></li>
+          {/* Computing Degrees (2 cols) */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="text-slate-200 text-xs font-semibold uppercase tracking-wider font-mono">Degree Programs</h4>
+            <ul className="space-y-2 text-slate-400">
+              <li><Link to="/browse?degree=BSCS" className="hover:text-slate-200 transition-colors">BS Computer Science</Link></li>
+              <li><Link to="/browse?degree=BSSE" className="hover:text-slate-200 transition-colors">BS Software Engineering</Link></li>
+              <li><Link to="/browse?degree=BSIT" className="hover:text-slate-200 transition-colors">BS Information Technology</Link></li>
+              <li><Link to="/browse?degree=BSAI" className="hover:text-slate-200 transition-colors">BS Artificial Intelligence</Link></li>
+              <li><Link to="/browse?degree=BSDS" className="hover:text-slate-200 transition-colors">BS Data Science</Link></li>
             </ul>
           </div>
 
-          {/* Quick Subjects */}
-          <div>
-            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-3">Core Subjects</h4>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/browse?subject=Database+Systems" className="hover:text-[#D6B779] transition-colors">Database Systems (DBMS)</Link></li>
-              <li><Link to="/browse?subject=Web+Engineering" className="hover:text-[#D6B779] transition-colors">Web Engineering (MERN)</Link></li>
-              <li><Link to="/browse?subject=Data+Structures+and+Algorithms" className="hover:text-[#D6B779] transition-colors">Data Structures (DSA)</Link></li>
-              <li><Link to="/browse?subject=Object+Oriented+Programming" className="hover:text-[#D6B779] transition-colors">OOP in C++ &amp; Java</Link></li>
-              <li><Link to="/browse?subject=Artificial+Intelligence" className="hover:text-[#D6B779] transition-colors">Machine Learning &amp; AI</Link></li>
+          {/* Quick Subjects (3 cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-slate-200 text-xs font-semibold uppercase tracking-wider font-mono">Curricular Subjects</h4>
+            <ul className="space-y-2 text-slate-400">
+              <li><Link to="/browse?subject=Database+Systems" className="hover:text-slate-200 transition-colors">Database Systems (DBMS &amp; SQL)</Link></li>
+              <li><Link to="/browse?subject=Web+Engineering" className="hover:text-slate-200 transition-colors">Web Engineering &amp; REST APIs</Link></li>
+              <li><Link to="/browse?subject=Data+Structures+and+Algorithms" className="hover:text-slate-200 transition-colors">Data Structures &amp; Algorithms</Link></li>
+              <li><Link to="/browse?subject=Object+Oriented+Programming" className="hover:text-slate-200 transition-colors">Object-Oriented Programming (C++/Java)</Link></li>
+              <li><Link to="/browse?subject=Artificial+Intelligence" className="hover:text-slate-200 transition-colors">Machine Learning &amp; AI</Link></li>
             </ul>
           </div>
 
-          {/* Platform & Trust */}
-          <div>
-            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-3">Platform</h4>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/custom-request" className="hover:text-[#D6B779] transition-colors">Request Custom Project</Link></li>
-              <li><Link to="/how-it-works" className="hover:text-[#D6B779] transition-colors">How It Works</Link></li>
-              <li><Link to="/academic-integrity" className="hover:text-[#D6B779] transition-colors">Academic Integrity</Link></li>
-              <li><Link to="/team" className="hover:text-[#D6B779] transition-colors">Our Team</Link></li>
-              <li><Link to="/contact" className="hover:text-[#D6B779] transition-colors">Contact Us</Link></li>
-              <li><span className="text-[#D6B779] font-medium">PKR Payouts (JazzCash/EasyPaisa)</span></li>
+          {/* Platform & Governance (3 cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-slate-200 text-xs font-semibold uppercase tracking-wider font-mono">Platform Standards</h4>
+            <ul className="space-y-2 text-slate-400">
+              <li><Link to="/custom-request" className="hover:text-slate-200 transition-colors">Custom Project Requests</Link></li>
+              <li><Link to="/how-it-works" className="hover:text-slate-200 transition-colors">How It Works</Link></li>
+              <li><Link to="/academic-integrity" className="hover:text-slate-200 transition-colors">Academic Integrity Policy</Link></li>
+              <li><Link to="/team" className="hover:text-slate-200 transition-colors">Our Team</Link></li>
+              <li><Link to="/contact" className="hover:text-slate-200 transition-colors">Contact &amp; Support</Link></li>
+              <li className="pt-1 text-[11px] text-slate-400 font-mono">
+                Payout Channels: JazzCash &bull; EasyPaisa &bull; Bank
+              </li>
             </ul>
           </div>
 
         </div>
 
-        {/* Bottom Credits & Copyright */}
-        <div className="border-t border-[#1B2940] mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        {/* Lower Legal & Honor Code Bar */}
+        <div className="border-t border-slate-850 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-4">
           <div>
-            &copy; {new Date().getFullYear()} StudentBazaar. Built for BSIT / BSCS Students across Pakistan.
+            &copy; {new Date().getFullYear()} StudentBazaar. Academic Repository for Computing Students in Pakistan.
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <span>Powered by studentBazaar</span> 
+          <div className="flex items-center gap-4 text-[11px]">
+            <Link to="/academic-integrity" className="hover:text-slate-300 transition-colors">
+              Honor Code Policy
+            </Link>
             <span>&bull;</span>
-            <span>Private Storage Vault</span>
+            <span>Pre-Signed Secure Storage</span>
+            <span>&bull;</span>
+            <span className="text-emerald-400 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Verified Escrow</span>
+            </span>
           </div>
         </div>
       </div>

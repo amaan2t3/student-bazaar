@@ -96,14 +96,17 @@ export const BrowseProjects = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
-      {/* Top Header & Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Header & Context */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <span className="text-xs font-mono uppercase tracking-wider text-[#C89D42] font-semibold">
+            Catalog Explorer
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mt-1">
             Browse Ready-Made Computing Projects
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Discover verified semester projects tailored for Pakistani CS, IT, and SE syllabi.
+            Inspected semester projects aligned with accredited Pakistani CS, IT, and SE syllabi.
           </p>
         </div>
       </div>
@@ -126,9 +129,9 @@ export const BrowseProjects = () => {
       {/* Results Header: Count & Sort */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
         <div className="text-xs text-slate-600">
-          Showing <span className="font-bold text-slate-900">{filteredProjects.length}</span> verified project packages
-          {degree && <span className="ml-1 font-semibold text-navy-mid">in {degree}</span>}
-          {semester && <span className="ml-1 font-semibold text-navy-mid">(Sem {semester})</span>}
+          Showing <span className="font-bold text-slate-900 font-mono">{filteredProjects.length}</span> verified packages
+          {degree && <span className="ml-1 font-semibold text-slate-900">in {degree}</span>}
+          {semester && <span className="ml-1 font-semibold text-slate-900">(Sem {semester})</span>}
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto text-xs">
@@ -136,10 +139,10 @@ export const BrowseProjects = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-gold shadow-sm"
+            className="bg-white border border-slate-200 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400 shadow-xs cursor-pointer"
           >
-            <option value="popular">Most Popular & Downloaded</option>
-            <option value="rating">Highest Rated (★)</option>
+            <option value="popular">Most Popular &amp; Downloaded</option>
+            <option value="rating">Highest Rated</option>
             <option value="price_asc">Price: Low to High (PKR)</option>
             <option value="price_desc">Price: High to Low (PKR)</option>
           </select>
@@ -148,40 +151,42 @@ export const BrowseProjects = () => {
 
       {/* Projects Grid or Empty State */}
       {loading ? (
-        <p className="py-12 text-center text-sm text-slate-500">Loading approved projects...</p>
+        <div className="py-16 text-center text-xs text-slate-400 font-mono">
+          Loading catalog items...
+        </div>
       ) : loadError ? (
-        <div role="alert" className="mx-auto my-8 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
-          <AlertCircle className="mx-auto h-8 w-8 text-red-600" />
-          <p className="mt-3 text-sm text-red-700">{loadError}</p>
-          <Button variant="outline" size="sm" className="mt-4" onClick={loadProjects}>
+        <div role="alert" className="mx-auto my-8 max-w-xl rounded-lg border border-rose-200 bg-rose-50 p-6 text-center space-y-3">
+          <AlertCircle className="mx-auto h-7 w-7 text-rose-600" />
+          <p className="text-xs sm:text-sm text-rose-700">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={loadProjects}>
             Try Again
           </Button>
         </div>
       ) : filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       ) : (
         /* Empty State with Custom Request CTA */
-        <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4 my-8 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-ivory text-gold flex items-center justify-center mx-auto">
-            <PackageOpen className="w-8 h-8" />
+        <div className="bg-white rounded-lg border border-slate-200 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4 my-8 shadow-subtle">
+          <div className="w-12 h-12 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center mx-auto border border-slate-200">
+            <PackageOpen className="w-6 h-6 stroke-1" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">
-            No projects matched your exact filter
+          <h3 className="text-base font-bold text-slate-900">
+            No projects matched your exact criteria
           </h3>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-            We couldn't find any ready-made packages for your current criteria. You can post a custom assignment request or reset the filters.
+          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+            We couldn't find any ready-made packages matching this filter. You can submit a custom assignment request or clear filters to view all.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button variant="outline" size="sm" onClick={handleResetFilters}>
               Reset All Filters
             </Button>
             <Link to="/custom-request">
-              <Button variant="primary" size="sm"  >
-                Post Custom Assignment Request
+              <Button variant="primary" size="sm">
+                Submit Custom Project Request &rarr;
               </Button>
             </Link>
           </div>

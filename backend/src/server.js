@@ -49,6 +49,27 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
+// Root and API v1 index endpoint
+app.get(['/', '/api/v1'], (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'studentBazaar API v1 is active and running',
+    database: isSupabaseConfigured ? 'Supabase PostgreSQL' : 'Not configured',
+    authentication: isSupabaseConfigured ? 'Supabase Auth' : 'Disabled',
+    endpoints: {
+      health: '/api/v1/health',
+      projects: '/api/v1/projects',
+      auth: '/api/v1/auth',
+      sellers: '/api/v1/sellers',
+      orders: '/api/v1/orders',
+      customRequests: '/api/v1/custom-requests',
+      contact: '/api/v1/contact',
+      team: '/api/v1/team',
+      admin: '/api/v1/admin'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({

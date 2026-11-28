@@ -7,26 +7,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        // StudentBazaar Brand Colors
+        // Refined Senior UI Palette
         navy: {
-          DEFAULT: '#101827',   // Midnight Navy - Navbar, Footer, Headings
-          dark: '#101827',
-          mid: '#1B2940',       // Royal Navy - Secondary buttons
-          light: '#475569',     // Slate Text
+          DEFAULT: '#0F172A',   // Deep slate navy - Primary structure & typography
+          dark: '#090D16',      // Midnight base
+          mid: '#1E293B',       // Secondary dark surface
+          light: '#475569',     // Slate body text
         },
         gold: {
-          DEFAULT: '#D6B779',   // Champagne Gold - Primary buttons, icons
-          soft: '#E9D9B5',      // Soft Gold
-          dark: '#B8933A',      // Darker gold for hover
+          DEFAULT: '#C89D42',   // Warm brass gold - High contrast accents
+          soft: '#F5EFE6',      // Delicate warm tint for badges
+          dark: '#A67F2C',      // Active & hover states
+          border: '#E8DBC5',    // Subtle warm border
+        },
+        surface: {
+          DEFAULT: '#FFFFFF',
+          muted: '#F8FAFC',
+          subtle: '#F1F5F9',
+          border: '#E2E8F0',
         },
         ivory: {
-          DEFAULT: '#F8F5ED',   // Main background
-          dark: '#E5E1D8',      // Border
+          DEFAULT: '#FBFBFA',
+          dark: '#E7E5E4',
         },
-        muted: '#94A3B8',       // Muted Grey
+        muted: '#64748B',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      boxShadow: {
+        'subtle': '0 1px 2px 0 rgba(15, 23, 42, 0.05)',
+        'elevated': '0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05)',
+        'card-hover': '0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04)',
       }
     },
   },

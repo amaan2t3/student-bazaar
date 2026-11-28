@@ -4,25 +4,48 @@
 
 @layer base {
   body {
-    @apply text-[#475569] font-sans antialiased;
-    background-color: #F8F5ED;
-    selection-color: #101827;
+    @apply text-slate-700 font-sans antialiased bg-[#F8FAFC];
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-slate-900 text-amber-200;
   }
 }
 
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F5ED;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E9D9B5;
-  border-radius: 4px;
+  background: #CBD5E1;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D6B779;
+  background: #94A3B8;
+}
+
+/* Continuous horizontal ticker marquee */
+@keyframes tickerAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: tickerAnimation 35s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
 }

@@ -6,8 +6,6 @@ import {
   ShoppingCart,
   Menu,
   X,
-  Sparkles,
-  UserCircle,
   LogOut,
   ChevronDown,
   ShieldCheck,
@@ -22,9 +20,7 @@ import {
   Layers,
   HelpCircle,
   Mail,
-  Shield,
-  ArrowRight,
-  GraduationCap
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -58,205 +54,146 @@ export const Navbar = () => {
     }
   };
 
-  // Brand Palette
-  const MIDNIGHT_NAVY = '#101827';
-  const GOLD = '#D6B779';
-  const BORDER = '#E5E1D8';
-
-  const publicNavLinkClasses = ({ isActive }) =>
-    `px-3 py-1.5 rounded-full text-xs xl:text-sm font-semibold transition-all duration-150 whitespace-nowrap flex items-center gap-1.5 ${
+  const navLinkClass = ({ isActive }) =>
+    `px-2.5 xl:px-3 py-2 text-sm font-medium transition-colors rounded-lg whitespace-nowrap inline-flex items-center ${
       isActive
-        ? 'bg-slate-900 text-[#D6B779] shadow-sm'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+        ? 'text-slate-900 bg-slate-100 font-semibold'
+        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
     }`;
 
-  const adminNavLinkClasses = ({ isActive }) =>
-    `px-3 py-1.5 rounded-full text-xs xl:text-sm font-semibold transition-all duration-150 whitespace-nowrap flex items-center gap-1.5 ${
+  const adminNavLinkClass = ({ isActive }) =>
+    `px-2.5 xl:px-3 py-2 text-sm font-medium transition-colors rounded-lg whitespace-nowrap inline-flex items-center ${
       isActive
-        ? 'bg-[#101827] text-[#D6B779] shadow-sm'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+        ? 'text-slate-900 bg-slate-100 font-semibold'
+        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
     }`;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white shadow-xs" style={{ borderBottom: `1px solid ${BORDER}` }}>
-
-      {/* ── 1. Top Announcement Bar (Full Screen Width) ── */}
-      <div style={{ backgroundColor: MIDNIGHT_NAVY }} className="w-full text-white text-[11px] sm:text-xs py-1.5 px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div className="w-full flex items-center justify-between gap-4">
-          {role === 'admin' ? (
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-bold tracking-wide" style={{ color: GOLD }}>ADMINISTRATION GOVERNANCE CONSOLE</span>
-              <span className="text-slate-400 hidden md:inline">&bull; Platform Moderation, Catalog Management &amp; Inquiries</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2.5 truncate">
-              <span className="inline-block w-2 h-2 rounded-full bg-[#D6B779] shrink-0 animate-pulse" />
-              <span className="font-bold text-[#D6B779] tracking-wide uppercase text-[10px] sm:text-xs">
-                Official Provided
-              </span>
-              <span className="text-slate-300 truncate hidden sm:inline">
-                Semester Project &bull; Subject Notes &bull; FYP &bull; Project Docs 
-              </span>
-            </div>
-          )}
-
-          {logoutError && (
-            <span role="alert" className="text-xs text-red-400 font-medium">{logoutError}</span>
-          )}
-
-          <div className="flex items-center gap-4 shrink-0 text-slate-300">
-            {role !== 'admin' && (
-              <span className="hidden lg:inline text-slate-300">
-                Verified Currency: <strong className="text-white font-bold">PKR (Rs)</strong>
-              </span>
-            )}
-            <Link to="/academic-integrity" className="text-slate-300 hover:text-white transition-colors underline hidden sm:inline">
-              Academic Policy
-            </Link>
-            <Link to="/contact" className="text-slate-300 hover:text-white transition-colors hidden sm:inline">
-              Support
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200/90 shadow-subtle">
+      {/* ── 1. Top Continuously Scrolling Horizontal Announcement Ticker ── */}
+      <div className="w-full bg-slate-950 text-slate-200 text-xs py-1.5 border-b border-slate-800 overflow-hidden relative select-none">
+        <div className="animate-ticker flex items-center gap-8 font-medium whitespace-nowrap text-[11px] sm:text-xs">
+          <span><strong>Semester Fall 2026:</strong> 150+ verified computing projects with runnable code &amp; IEEE SRS documentation</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Promo:</strong> Use code <span className="text-[#C89D42] font-mono font-bold">SEMESTER20</span> for 20% off verified project packages</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Viva-Ready Guarantee:</strong> Complete DB schemas, ERD diagrams, and PowerPoint defense slides included</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Student Sellers:</strong> Monetize your university coursework and earn up to Rs. 25,000/mo</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          {/* Continuous Duplicate Set for Smooth Infinity Loop */}
+          <span><strong>Semester Fall 2026:</strong> 150+ verified computing projects with runnable code &amp; IEEE SRS documentation</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Promo:</strong> Use code <span className="text-[#C89D42] font-mono font-bold">SEMESTER20</span> for 20% off verified project packages</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Viva-Ready Guarantee:</strong> Complete DB schemas, ERD diagrams, and PowerPoint defense slides included</span>
+          <span className="text-[#C89D42]">&bull;</span>
+          <span><strong>Student Sellers:</strong> Monetize your university coursework and earn up to Rs. 25,000/mo</span>
+          <span className="text-[#C89D42]">&bull;</span>
         </div>
       </div>
 
-      {/* ── 2. Main Navigation Bar (Full Screen Width: w-full px-4 sm:px-6 lg:px-8 xl:px-12) ── */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div className="flex items-center justify-between h-16 gap-3 lg:gap-6">
-
-          {/* Brand Logo & Title */}
-          <Link
-            to={role === 'admin' ? '/admin/dashboard' : '/'}
-            className="flex items-center gap-3 shrink-0 group focus:outline-none"
-          >
-            <img
-              src={logo}
-              alt="StudentBazaar Logo"
-              className="h-10 w-10 object-contain rounded-xl border border-slate-200/80 shadow-xs group-hover:scale-105 transition-transform duration-200"
-            />
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none group-hover:text-black">
-                Student<span style={{ color: GOLD }}>Bazaar</span>
-              </span>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#D6B779] mt-0.5">
-                {role === 'admin' ? 'Admin Portal' : 'Academic Marketplace'}
-              </span>
-            </div>
-          </Link>
-
-          {/* Search bar (Full-width responsive placement for public visitors) */}
-          {role !== 'admin' && (
-            <form onSubmit={handleSearchSubmit} className="hidden xl:flex items-center relative flex-1 max-w-xs 2xl:max-w-sm">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search projects, degrees, or topics..."
-                className="w-full pl-9 pr-4 py-2 text-xs bg-slate-100 hover:bg-slate-200/60 focus:bg-white border border-slate-200 focus:border-[#D6B779] rounded-full placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D6B779]/30 transition-all shadow-2xs"
+      {/* ── 2. Main Standard-Height Navigation Bar ── */}
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20 gap-4">
+          
+          {/* Left: Brand Logo & Desktop Nav Links */}
+          <div className="flex items-center gap-6 xl:gap-8 min-w-0">
+            <Link
+              to={role === 'admin' ? '/admin/dashboard' : '/'}
+              className="flex items-center gap-3 shrink-0 group focus:outline-none"
+            >
+              <img
+                src={logo}
+                alt="StudentBazaar Logo"
+                className="h-11 w-11 object-contain rounded-lg border border-slate-200 shadow-xs group-hover:scale-105 transition-transform"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-            </form>
-          )}
+              <div className="flex flex-col">
+                <span className="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                  Student<span className="text-[#C89D42]">Bazaar</span>
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  {role === 'admin' ? 'Admin Portal' : 'Academic Marketplace'}
+                </span>
+              </div>
+            </Link>
 
-          {/* Desktop Nav Links (Full Width Centered Layout) */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2">
-            {role === 'admin' ? (
-              <>
-                <NavLink to="/admin/dashboard" className={adminNavLinkClasses}>
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Control Panel</span>
-                </NavLink>
-                <NavLink to="/admin/projects" className={adminNavLinkClasses}>
-                  <FolderCheck className="w-3.5 h-3.5" />
-                  <span>Projects</span>
-                </NavLink>
-                <NavLink to="/admin/custom-requests" className={adminNavLinkClasses}>
-                  <ClipboardCheck className="w-3.5 h-3.5" />
-                  <span>Requests</span>
-                </NavLink>
-                <NavLink to="/admin/seller-applications" className={adminNavLinkClasses}>
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>Applications</span>
-                </NavLink>
-                <NavLink to="/admin/contact-messages" className={adminNavLinkClasses}>
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>Messages</span>
-                </NavLink>
-                <NavLink to="/admin/team" className={adminNavLinkClasses}>
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Our Team</span>
-                </NavLink>
-                <NavLink to="/admin/contact-settings" className={adminNavLinkClasses}>
-                  <Settings className="w-3.5 h-3.5" />
-                  <span>Settings</span>
-                </NavLink>
-              </>
-            ) : (
-              <>
-                <NavLink to="/browse" className={publicNavLinkClasses}>
-                   <span>Browse Projects</span>
-                </NavLink>
+            {/* Desktop Navigation Links (Pure clean text without prefix icon clutter) */}
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink-0">
+              {role === 'admin' ? (
+                <>
+                  <NavLink to="/admin/dashboard" className={adminNavLinkClass}>Control Panel</NavLink>
+                  <NavLink to="/admin/projects" className={adminNavLinkClass}>Projects</NavLink>
+                  <NavLink to="/admin/custom-requests" className={adminNavLinkClass}>Requests</NavLink>
+                  <NavLink to="/admin/seller-applications" className={adminNavLinkClass}>Applications</NavLink>
+                  <NavLink to="/admin/contact-messages" className={adminNavLinkClass}>Messages</NavLink>
+                  <NavLink to="/admin/team" className={adminNavLinkClass}>Team</NavLink>
+                  <NavLink to="/admin/contact-settings" className={adminNavLinkClass}>Settings</NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/browse" className={navLinkClass}>Browse Projects</NavLink>
+                  <NavLink to="/custom-request" className={navLinkClass}>Custom Request</NavLink>
+                  
+                  {role === 'seller' ? (
+                    <>
+                      <NavLink to="/seller/my-projects" className={navLinkClass}>My Projects</NavLink>
+                      <NavLink
+                        to="/seller/add-project"
+                        className="px-3 py-2 text-sm font-semibold rounded-lg bg-[#F5EFE6] text-[#8C6B23] border border-[#E8DBC5] hover:bg-[#E8DBC5] transition-colors whitespace-nowrap inline-flex items-center ml-1"
+                      >
+                        + Upload Project
+                      </NavLink>
+                    </>
+                  ) : (
+                    <>
+                      {user && (
+                        <NavLink to="/my-downloads" className={navLinkClass}>My Downloads</NavLink>
+                      )}
+                      <NavLink
+                        to="/become-seller"
+                        className="px-2.5 xl:px-3 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap inline-flex items-center"
+                      >
+                        Become a Seller
+                      </NavLink>
+                    </>
+                  )}
 
-                <NavLink to="/custom-request" className={publicNavLinkClasses}>
-                   <span>Custom Request</span>
-                </NavLink>
+                  <NavLink to="/how-it-works" className={navLinkClass}>How It Works</NavLink>
+                  <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+                </>
+              )}
+            </nav>
+          </div>
 
-                {role === 'seller' ? (
-                  <>
-                    <NavLink to="/seller/my-projects" className={publicNavLinkClasses}>
-                       <span>My Projects</span>
-                    </NavLink>
-                    <NavLink
-                      to="/seller/add-project"
-                      className="px-3 py-1.5 text-xs font-bold rounded-full bg-[#D6B779] hover:bg-[#B8933A] text-[#101827] shadow-xs transition-colors flex items-center gap-1 ml-1"
-                    >
-                       <span>Upload Project</span>
-                    </NavLink>
-                  </>
-                ) : (
-                  <>
-                    <NavLink to="/my-downloads" className={publicNavLinkClasses}>
-                       <span>My Downloads</span>
-                    </NavLink>
-                    <NavLink
-                      to="/become-seller"
-                      className="px-3 py-1.5 text-xs font-bold rounded-full border border-[#D6B779] text-[#101827] bg-[#F8F5ED]/80 hover:bg-[#D6B779] hover:text-[#101827] transition-all ml-1"
-                    >
-                      Become a Seller
-                    </NavLink>
-                  </>
-                )}
-
-                <NavLink to="/how-it-works" className={publicNavLinkClasses}>
-                   <span>How It Works</span>
-                </NavLink>
-
-                <NavLink to="/team" className={publicNavLinkClasses}>
-                   <span>Our Team</span>
-                </NavLink>
-
-                <NavLink to="/contact" className={publicNavLinkClasses}>
-                   <span>Contact</span>
-                </NavLink>
-              </>
+          {/* Right Action Group: Search, Cart & Account/Auth Buttons */}
+          <div className="flex items-center gap-3 shrink-0">
+            {role !== 'admin' && (
+              <form onSubmit={handleSearchSubmit} className="hidden xl:flex items-center relative w-44 2xl:w-60 shrink-0">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search projects..."
+                  className="w-full pl-8 pr-6 py-1.5 text-xs xl:text-sm bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-slate-400 rounded-lg placeholder:text-slate-400 focus:outline-none transition-all"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2 xl:top-2.5 pointer-events-none" />
+                <div className="absolute right-2 top-1.5 xl:top-2 flex items-center pointer-events-none text-[10px] text-slate-400 bg-white border border-slate-200 rounded px-1.5 py-0.5">
+                  /
+                </div>
+              </form>
             )}
-          </nav>
 
-          {/* Right Section: Cart + Account & Auth Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {role !== 'admin' && (
               <Link
                 to="/browse"
-                className="relative p-2.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-colors"
+                className="relative p-2.5 rounded-lg border border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors shrink-0"
                 title="Cart &amp; Orders"
+                aria-label="View shopping cart"
               >
-                <ShoppingCart className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs"
-                    style={{ backgroundColor: GOLD, color: MIDNIGHT_NAVY }}
-                  >
+                  <span className="absolute -top-1.5 -right-1.5 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center bg-slate-900 text-white shadow-xs">
                     {cartCount}
                   </span>
                 )}
@@ -264,63 +201,59 @@ export const Navbar = () => {
             )}
 
             {user ? (
-              <div className="relative flex items-center pl-2 border-l border-slate-200">
+              <div className="relative flex items-center pl-3 border-l border-slate-200">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2.5 p-1 rounded-full hover:bg-slate-50 transition-colors focus:outline-none"
+                  className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none"
+                  aria-expanded={userDropdownOpen}
                 >
                   <div className="hidden md:block text-right">
-                    <div className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
+                    <div className="text-sm font-semibold text-slate-900 truncate max-w-[130px]">
                       {user.full_name || user.name}
                     </div>
-                    <div className="text-[10px] font-bold text-amber-600 uppercase">
-                      {user.university || role}
+                    <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                      {role}
                     </div>
                   </div>
                   <img
                     src={user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150'}
                     alt="User Avatar"
-                    className="w-9 h-9 rounded-full object-cover ring-2 ring-[#D6B779] ring-offset-2 shadow-xs"
+                    className="w-9 h-9 rounded-full object-cover border border-slate-200"
                   />
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
                 </button>
 
                 {userDropdownOpen && (
                   <div
-                    className="absolute right-0 top-12 w-60 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2.5 z-50 text-xs"
+                    className="absolute right-0 top-14 w-60 bg-white rounded-lg shadow-elevated border border-slate-200 py-2 z-50 text-sm"
                     onClick={() => setUserDropdownOpen(false)}
                   >
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <div className="font-bold text-slate-900 text-sm truncate">{user.full_name || user.name}</div>
-                      <div className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</div>
-                      <div className="mt-2 text-[10px] font-extrabold px-2 py-0.5 rounded-full inline-block bg-[#F8F5ED] text-slate-800 border border-[#D6B779]/40">
-                        {role.toUpperCase()} ACCOUNT
-                      </div>
+                    <div className="px-4 py-2.5 border-b border-slate-100">
+                      <div className="font-semibold text-slate-900 truncate">{user.full_name || user.name}</div>
+                      <div className="text-xs text-slate-500 truncate mt-0.5">{user.email}</div>
                     </div>
 
-                    <div className="py-1">
+                    <div className="py-1.5">
                       {role === 'admin' ? (
                         <>
-                          <Link to="/admin/dashboard" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
+                          <Link to="/admin/dashboard" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700">
                              <span>Control Panel</span>
                           </Link>
-                          <Link to="/admin/contact-messages" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
+                          <Link to="/admin/contact-messages" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700">
                              <span>Inquiries Inbox</span>
                           </Link>
-                          <Link to="/admin/team" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                             <span>Manage Our Team</span>
-                          </Link>
-                          <Link to="/admin/contact-settings" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                             <span>Contact Settings</span>
+                          <Link to="/admin/team" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700">
+                            <Users className="w-4 h-4 text-slate-400" />
+                            <span>Manage Team</span>
                           </Link>
                         </>
                       ) : (
                         <>
-                          <Link to="/my-downloads" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
+                          <Link to="/my-downloads" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700">
                              <span>My Downloads</span>
                           </Link>
-                          <Link to="/custom-request" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium">
-                             <span>Custom Project Requests</span>
+                          <Link to="/custom-request" className="px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700">
+                             <span>Custom Requests</span>
                           </Link>
                         </>
                       )}
@@ -329,79 +262,77 @@ export const Navbar = () => {
                     <div className="pt-1.5 border-t border-slate-100">
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2.5 font-bold"
+                        className="w-full text-left px-4 py-2 text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 font-medium"
                       >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
+                         <span>Sign Out</span>
                       </button>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
+              <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-slate-200">
                 <Link to="/login">
-                  <button className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors">
-                    Login
-                  </button>
+                  <span className="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">
+                    Sign In
+                  </span>
                 </Link>
                 <Link to="/register">
-                  <button className="px-4 py-2 text-xs font-extrabold rounded-full bg-[#101827] text-[#D6B779] hover:bg-[#1B2940] shadow-sm transition-all">
+                  <Button variant="primary" size="md">
                     Register
-                  </button>
+                  </Button>
                 </Link>
               </div>
             )}
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Hamburger Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors focus:outline-none"
+              className="lg:hidden p-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
         </div>
 
-        {/* ── 3. Mobile Drawer Navigation (Full Width) ── */}
+        {/* ── 3. Mobile Navigation Drawer ── */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t py-4 px-2 space-y-4 bg-white" style={{ borderColor: BORDER }}>
+          <div className="lg:hidden border-t border-slate-200 py-4 space-y-3 bg-white">
             {role !== 'admin' && (
-              <form onSubmit={handleSearchSubmit} className="relative px-2">
+              <form onSubmit={handleSearchSubmit} className="relative pb-1">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search projects..."
-                  className="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D6B779] border border-slate-200"
+                  className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 rounded-lg focus:outline-none focus:border-slate-400 border border-slate-200"
                 />
-                <Search className="w-4 h-4 text-slate-400 absolute left-5 top-3.5 pointer-events-none" />
-              </form>
+               </form>
             )}
 
             <div className="space-y-1">
               {(role === 'admin'
                 ? [
                     { to: '/admin/dashboard', label: 'Control Panel', icon: ShieldCheck },
-                    { to: '/admin/projects', label: 'Ready-Made Projects', icon: FolderCheck },
+                    { to: '/admin/projects', label: 'Projects Moderation', icon: FolderCheck },
                     { to: '/admin/custom-requests', label: 'Buyer Requests', icon: ClipboardCheck },
                     { to: '/admin/seller-applications', label: 'Seller Applications', icon: UserCheck },
                     { to: '/admin/contact-messages', label: 'Contact Messages', icon: MessageSquare },
-                    { to: '/admin/team', label: 'Manage Our Team', icon: Users },
+                    { to: '/admin/team', label: 'Our Team', icon: Users },
                     { to: '/admin/contact-settings', label: 'Contact Settings', icon: Settings }
                   ]
                 : [
                     { to: '/browse', label: 'Browse Projects', icon: Layers },
-                    { to: '/custom-request', label: 'Custom Project Request', icon: Sparkles },
+                    { to: '/custom-request', label: 'Custom Project Request', icon: Shield },
                     { to: '/how-it-works', label: 'How It Works', icon: HelpCircle },
                     { to: '/academic-integrity', label: 'Academic Integrity', icon: Shield },
                     { to: '/team', label: 'Our Team', icon: Users },
                     { to: '/contact', label: 'Contact Us', icon: Mail },
                     ...(role === 'seller' ? [
                       { to: '/seller/my-projects', label: 'My Projects', icon: FolderCheck },
-                      { to: '/seller/add-project', label: '+ Upload Project', icon: PlusCircle }
+                      { to: '/seller/add-project', label: 'Upload Project', icon: PlusCircle }
                     ] : []),
                     ...(role === 'buyer' ? [
                       { to: '/my-downloads', label: 'My Downloads', icon: DownloadCloud },
@@ -414,39 +345,38 @@ export const Navbar = () => {
                   to={to}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
+                    `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#101827] text-[#D6B779]'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                        ? 'bg-slate-100 text-slate-900 font-semibold'
+                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                     }`
                   }
                 >
-                  <Icon className="w-4 h-4 shrink-0 text-slate-400" />
+                  <Icon className="w-4 h-4 text-slate-400" />
                   <span>{label}</span>
                 </NavLink>
               ))}
             </div>
 
             {/* Mobile Auth Buttons */}
-            <div className="pt-3 border-t border-slate-200 px-2 flex gap-3">
+            <div className="pt-3 border-t border-slate-100 flex gap-2">
               {!user ? (
                 <>
-                  <Link to="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full" variant="outline" size="sm">Login</Button>
+                  <Link to="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full" variant="outline" size="md">Sign In</Button>
                   </Link>
-                  <Link to="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full" variant="primary" size="sm">Register</Button>
+                  <Link to="/register" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full" variant="primary" size="md">Register</Button>
                   </Link>
                 </>
               ) : (
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="w-full text-red-600 border-red-200 hover:bg-red-50 flex items-center justify-center gap-2 font-bold"
+                  size="md"
+                  className="w-full text-rose-600 border-rose-200 hover:bg-rose-50 flex items-center justify-center gap-2"
                   onClick={() => { void handleLogout(); setMobileMenuOpen(false); }}
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
+                   <span>Sign Out</span>
                 </Button>
               )}
             </div>

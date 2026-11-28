@@ -326,27 +326,27 @@ export const ProjectDetails = () => {
         <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-20">
           
           {/* Purchase Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+          <div className="bg-white rounded-lg border border-slate-200/90 p-5 shadow-subtle space-y-4">
             <div>
-              <span className="text-xs text-slate-400 block font-medium">Fixed Project Price (PKR)</span>
+              <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">Fixed Price (PKR)</span>
               <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="text-3xl font-extrabold text-slate-900">
+                <span className="text-2xl font-bold text-slate-900 font-mono tracking-tight">
                   Rs. {project.pricePKR.toLocaleString()}
                 </span>
-                <span className="text-xs text-slate-500">PKR</span>
+                <span className="text-xs text-slate-400">PKR</span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={handleInstantBuy}
-                className="w-full text-base shadow-md shadow-emerald-700/10"
-                leftIcon={<Download className="w-5 h-5" />}
+                className="w-full text-xs font-semibold shadow-xs"
+                leftIcon={<Download className="w-4 h-4" />}
               >
-                Buy Now & Instant Download
+                Buy Now &bull; Instant Download
               </Button>
 
               <div className="grid grid-cols-2 gap-2">
@@ -354,7 +354,7 @@ export const ProjectDetails = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => addToCart(project)}
-                  className="w-full"
+                  className="w-full text-xs"
                 >
                   {inCart ? 'In Cart ✓' : 'Add to Cart'}
                 </Button>
@@ -362,9 +362,9 @@ export const ProjectDetails = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => toggleWishlist(project.id)}
-                  className={`w-full ${wishlisted ? 'text-red-600' : ''}`}
+                  className={`w-full text-xs ${wishlisted ? 'text-rose-600' : ''}`}
                 >
-                  <Heart className={`w-4 h-4 mr-1.5 ${wishlisted ? 'fill-current' : ''}`} />
+                  <Heart className={`w-3.5 h-3.5 mr-1.5 ${wishlisted ? 'fill-current' : ''}`} />
                   {wishlisted ? 'Saved' : 'Wishlist'}
                 </Button>
               </div>
@@ -373,23 +373,23 @@ export const ProjectDetails = () => {
             {/* Guarantees List */}
             <div className="pt-3 border-t border-slate-100 space-y-2 text-xs text-slate-600">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-gold shrink-0" />
-                <span>Instant pre-signed secure download link</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Instant signed secure download link</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-gold shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Zero broken dependencies guarantee</span>
               </div>
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-gold shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Editable SRS Word / PDF document</span>
               </div>
             </div>
           </div>
 
           {/* Seller Profile Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="bg-white rounded-lg border border-slate-200/90 p-4 shadow-subtle space-y-3">
+            <h4 className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
               Verified Student Creator
             </h4>
 
@@ -397,21 +397,21 @@ export const ProjectDetails = () => {
               <img
                 src={project.seller.avatar}
                 alt={project.seller.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-gold shadow-sm"
+                className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-xs"
               />
               <div>
-                <h5 className="font-bold text-slate-900 text-sm">{project.seller.name}</h5>
-                <p className="text-xs text-navy-mid font-medium">{project.seller.university}</p>
-                <div className="flex items-center gap-1 text-[11px] text-amber-600 font-semibold mt-0.5">
-                  <Star className="w-3 h-3 fill-current" />
-                  <span>{project.seller.rating.toFixed(2)} Rating</span>
+                <h5 className="font-semibold text-slate-900 text-xs">{project.seller.name}</h5>
+                <p className="text-[11px] text-slate-500 font-medium">{project.seller.university}</p>
+                <div className="flex items-center gap-1 text-[11px] text-amber-700 font-medium mt-0.5">
+                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                  <span>{project.seller.rating.toFixed(2)}</span>
                   <span className="text-slate-400 font-normal">({project.seller.salesCount} sold)</span>
                 </div>
               </div>
             </div>
 
             <p className="text-xs text-slate-500 leading-relaxed">
-              Approved senior developer verified with university student ID and GitHub portfolio.
+              Approved senior developer verified with student ID and GitHub portfolio.
             </p>
 
             <Button
