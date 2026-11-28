@@ -108,7 +108,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 studentBazaar Express Backend running on http://localhost:${PORT}`);
   console.log(`📡 Supabase: ${isSupabaseConfigured ? 'Configured' : 'Not configured; protected routes disabled'}`);
 });
